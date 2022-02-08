@@ -13,7 +13,7 @@ export const Trove = () => {
             <Route
                 render={() => {
                     // if there is a user logged in, show the navbar and app
-                    if (localStorage.getItem("trove_user")) {
+                    if (localStorage.getItem("trove_token")) {
                         return (
                             <>
                                 <NavBar newNotification={newNotification} />

@@ -1,95 +1,88 @@
-import React, { useRef, useState } from "react"
-import { useHistory } from "react-router-dom"
-import { Button, Form, FormGroup, Input, Label } from "reactstrap"
-import { TagRepo } from "../../repositories/TagRepo"
+import React, { useRef } from "react"
+import { Link, useHistory } from "react-router-dom"
+import "./Auth.css"
 
-export const Register = (props) => {
-    const [user, setUser] = useState({})
-    const conflictDialog = useRef()
-
+export const Register = () => {
+    const firstName = useRef()
+    const lastName = useRef()
+    const username = useRef()
+    const bio = useRef()
+    const password = useRef()
+    const verifyPassword = useRef()
+    const passwordDialog = useRef()
     const history = useHistory()
 
-    const existingUserCheck = () => {
-        return fetch(`http://localhost:8088/users?email=${user.email}`)
-            .then(res => res.json())
-            .then(user => !!user.length)
-    }
     const handleRegister = (e) => {
         e.preventDefault()
-        existingUserCheck()
-            .then((userExists) => {
-                if (!userExists) {
-                    fetch("http://localhost:8088/users", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(user)
-                    })
-                        .then(res => res.json())
-                        .then(postDefaultTags)
-                }
-                else {
-                    conflictDialog.current.showModal()
-                }
-            })
-    }
 
-    const postDefaultTags = (createdUser) => {
-        const defaultTagArray = ["Action", "Adventure", "Comedy", "Drama", "Mystery",
-            "Fantasy", "Historical", "Horror", "Romance", "Science Fiction", "Thriller",
-            "Western", "Platformer", "Shooter", "Survival", "Battle Royale", "RPG",
-            "Simulator", "Strategy", "Esports", "Casual", "Educational", "Sandbox", "Open world"
-        ]
-        let promiseArray = []
-        for (const item of defaultTagArray) {
-            TagRepo.addTag({
-                tag: item,
-                userId: createdUser.id
+        if (password.current.value === verifyPassword.current.value) {
+            const newUser = {
+                "username": username.current.value,
+                "first_name": firstName.current.value,
+                "last_name": lastName.current.value,
+                "password": password.current.value
+            }
+
+            return fetch("http://127.0.0.1:8000/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(newUser)
             })
+                .then(res => res.json())
+                .then(res => {
+                    if ("token" in res) {
+                        localStorage.setItem("trove_token", res.token)
+                        localStorage.setItem("userId", res.userId)
+                        history.push("/")
+                    }
+                })
+        } else {
+            passwordDialog.current.showModal()
         }
-        Promise.all(promiseArray)
-            .then(() => {
-                if (createdUser.hasOwnProperty("id")) {
-                    localStorage.setItem("trove_user", createdUser.id)
-                    history.push("/")
-                }
-            })
-    }
-
-    const updateUser = (evt) => {
-        const copy = { ...user }
-        copy[evt.target.id] = evt.target.value
-        setUser(copy)
     }
 
     return (
-        <main className="row justify-content-center my-5">
-            <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
-                <dialog className="dialog dialog--password" ref={conflictDialog}>
-                    <div>Account with that email address already exists</div>
-                    <Button close onClick={e => conflictDialog.current.close()} color="info" className="text-white text-right" />
-                </dialog>
+        <main style={{ textAlign: "center" }}>
 
-                <Form onSubmit={handleRegister}>
-                    <h1 className="pt-4">Trove</h1>
-                    <h5 className="pt-4">Please Register</h5>
-                    <FormGroup className="pt-3">
-                        <Label htmlFor="name"> Full Name </Label>
-                        <Input onChange={updateUser}
-                            type="text" id="name"
-                            placeholder="Enter your name" required autoFocus />
-                    </FormGroup>
-                    <FormGroup className="pt-3">
-                        <Label htmlFor="email"> Email address </Label>
-                        <Input onChange={updateUser} type="email" id="email" placeholder="Email address" required />
-                    </FormGroup>
-                    <FormGroup className="pt-3">
-                        <Button color="info" type="submit"> Register </Button>
-                    </FormGroup>
-                </Form>
-            </div>
+            <dialog className="dialog dialog--password" ref={passwordDialog}>
+                <div>Passwords do not match</div>
+                <button className="button--close" onClick={e => passwordDialog.current.close()}>Close</button>
+            </dialog>
+
+            <form className="form--login" onSubmit={handleRegister}>
+                <h1 className="h3 mb-3 font-weight-normal">Register an account</h1>
+                <fieldset>
+                    <label htmlFor="firstName"> First Name </label>
+                    <input ref={firstName} type="text" name="firstName" className="form-control" placeholder="First name" required autoFocus />
+                </fieldset>
+                <fieldset>
+                    <label htmlFor="lastName"> Last Name </label>
+                    <input ref={lastName} type="text" name="lastName" className="form-control" placeholder="Last name" required />
+                </fieldset>
+                <fieldset>
+                    <label htmlFor="inputUsername">Username</label>
+                    <input ref={username} type="text" name="username" className="form-control" placeholder="Username" required />
+                </fieldset>
+                <fieldset>
+                    <label htmlFor="inputPassword"> Password </label>
+                    <input ref={password} type="password" name="password" className="form-control" placeholder="Password" required />
+                </fieldset>
+                <fieldset>
+                    <label htmlFor="verifyPassword"> Verify Password </label>
+                    <input ref={verifyPassword} type="password" name="verifyPassword" className="form-control" placeholder="Verify password" required />
+                </fieldset>
+                <fieldset style={{
+                    textAlign: "center"
+                }}>
+                    <button className="btn btn-1 btn-sep icon-send" type="submit">Register</button>
+                </fieldset>
+            </form>
+            <section className="link--register">
+                Already registered? <Link to="/login">Login</Link>
+            </section>
         </main>
     )
 }
-
