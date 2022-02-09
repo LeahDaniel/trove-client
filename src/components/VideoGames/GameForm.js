@@ -4,7 +4,6 @@ import { Alert, Button, Form, FormGroup, FormText, Input, Label} from "reactstra
 import { GameRepo } from "../../repositories/GameRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
-import { sortByTag } from "../../repositories/FetchAndSort"
 
 export const GameForm = () => {
     const userId = parseInt(localStorage.getItem("trove_user"))
@@ -37,9 +36,7 @@ export const GameForm = () => {
             GameRepo.getAllPlatforms()
                 .then(setPlatforms)
                 .then(() => TagRepo.getTagsForUser(userId))
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
+                .then(setTags)
                 .then(() => {
                     if (presentGame) {
                         //on presentGame state change (when user clicks edit to be brought to form)

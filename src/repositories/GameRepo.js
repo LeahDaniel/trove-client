@@ -13,7 +13,7 @@ export const GameRepo = {
             current = ""
         }
  
-        return await fetchIt(`http://localhost:8088/games${current}`)
+        return await fetchIt(`http://localhost:8000/games${current}`)
 
     },
 
@@ -26,26 +26,26 @@ export const GameRepo = {
         } else {
             current = ""
         }
-        return await fetchIt(`http://localhost:8088/games?q=${searchTerm}${current}`)
+        return await fetchIt(`http://localhost:8000/games?q=${searchTerm}${current}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8088/games/${id}`)
+        return await fetchIt(`http://localhost:8000/games/${id}`)
     },
     async getAllPlatforms() {
-        return await fetchIt(`http://localhost:8088/platforms`)
+        return await fetchIt(`http://localhost:8000/platforms`)
     },
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8088/games/${id}`, "DELETE")
+        return await fetchIt(`http://localhost:8000/games/${id}`, "DELETE")
     },
 
 
     //POSTs
     async addGame(newGame) {
         return await fetchIt(
-            `http://localhost:8088/games`,
+            `http://localhost:8000/games`,
             "POST",
             JSON.stringify(newGame)
         )
@@ -54,7 +54,7 @@ export const GameRepo = {
     //PUTs
     async modifyGame(modifiedGame, id) {
         return await fetchIt(
-            `http://localhost:8088/games/${id}`,
+            `http://localhost:8000/games/${id}`,
             "PUT",
             JSON.stringify(modifiedGame)
         )

@@ -4,7 +4,6 @@ import { Alert, Button, Form, FormGroup, FormText, Input, Label} from "reactstra
 import { BookRepo } from "../../repositories/BookRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
-import { sortByName, sortByTag } from "../../repositories/FetchAndSort"
 
 export const BookForm = () => {
     const history = useHistory()
@@ -29,14 +28,9 @@ export const BookForm = () => {
     useEffect(
         () => {
             //on page load, GET streaming services and tags
-            TagRepo.getTagsForUser(userId)
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
+            TagRepo.getTagsForUser(userId).then(setTags)
                 .then(() => BookRepo.getAuthorsForUser(userId))
-                .then(result => {
-                    setAuthors(sortByName(result))
-                })
+                .then(setAuthors)
                 .then(() => {
                     if (presentBook) {
                         //on presentBook state change (when user clicks edit to be brought to form)

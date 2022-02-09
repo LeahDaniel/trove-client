@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react"
 import { Button, Form, FormGroup, Input, Label } from "reactstrap"
-import { sortByTag } from "../../repositories/FetchAndSort"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const FilterForm = ({ userEntries, setUserEntries }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const [tags, setTags] = useState([])
     const [taggedGames, setTaggedGames] = useState([])
     const [taggedShows, setTaggedShows] = useState([])
@@ -13,15 +11,14 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
 
     useEffect(
         () => {
-            TagRepo.getTagsForUser(userId)
-                .then(setTags)
+            TagRepo.getAll().then(setTags)
                 .then(TagRepo.getTaggedBooks)
                 .then(setTaggedBooks)
                 .then(TagRepo.getTaggedGames)
                 .then(setTaggedGames)
                 .then(TagRepo.getTaggedShows)
                 .then(setTaggedShows)
-        }, [userId]
+        }, []
     )
 
     useEffect(
@@ -39,7 +36,7 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
                     }
                 }
 
-                setRelevantTags(sortByTag(newTagArray))
+                setRelevantTags(newTagArray)
 
         }, [tags, taggedGames, taggedShows, taggedBooks]
     )

@@ -4,7 +4,6 @@ import { Alert, Button, Form, FormGroup, FormText, Input, Label } from "reactstr
 import { ShowRepo } from "../../repositories/ShowRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
-import { sortByTag } from "../../repositories/FetchAndSort"
 
 export const ShowForm = () => {
     const userId = parseInt(localStorage.getItem("trove_user"))
@@ -31,9 +30,7 @@ export const ShowForm = () => {
         () => {
             //on page load, GET streaming services and tags
             TagRepo.getTagsForUser(userId)
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
+                .then(setTags)
                 .then(ShowRepo.getAllStreamingServices)
                 .then(setStreamingServices)
                 .then(() => {

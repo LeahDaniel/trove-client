@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, FormGroup, Input, Label } from 'reactstrap';
-import { sortByTag } from '../../repositories/FetchAndSort';
 import { TagRepo } from '../../repositories/TagRepo';
 import { TagList } from './TagList';
 import { TagSearch } from './TagSearch';
@@ -18,15 +17,11 @@ export const TagView = () => {
         () => {
             if (userEntry === "") {
                 TagRepo.getTagsForUser(userId)
-                    .then(result => {
-                        setTags(sortByTag(result))
-                    })
+                    .then(setTags)
                     .then(() => setIsLoading(false))
             } else {
                 TagRepo.getTagsForUserBySearchTerm(userId, userEntry)
-                    .then(result => {
-                        setTags(sortByTag(result))
-                    })
+                    .then(setTags)
                     .then(() => setIsLoading(false))
             }
 

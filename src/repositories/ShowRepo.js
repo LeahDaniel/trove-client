@@ -1,4 +1,4 @@
-import { fetchIt } from "./FetchAndSort"
+import { fetchIt } from "./FetchIt"
 
 //Object (ShowRepo) with methods (functions) added onto it, making each function accessible via dot notation.
 export const ShowRepo = {
@@ -13,7 +13,7 @@ export const ShowRepo = {
             current = ""
         }
  
-        return await fetchIt(`http://localhost:8088/shows${current}`)
+        return await fetchIt(`http://localhost:8000/shows${current}`)
 
     },
 
@@ -26,27 +26,27 @@ export const ShowRepo = {
         } else {
             current = ""
         }
-        return await fetchIt(`http://localhost:8088/shows?q=${searchTerm}${current}`)
+        return await fetchIt(`http://localhost:8000/shows?q=${searchTerm}${current}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8088/shows/${id}`)
+        return await fetchIt(`http://localhost:8000/shows/${id}`)
     },
 
     async getAllStreamingServices() {
-        return await fetchIt(`http://localhost:8088/streamingServices`)
+        return await fetchIt(`http://localhost:8000/streamingServices`)
     },
 
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8088/shows/${id}`, "DELETE")
+        return await fetchIt(`http://localhost:8000/shows/${id}`, "DELETE")
     },
 
     //POSTs
     async addShow(newShow) {
         return await fetchIt(
-            `http://localhost:8088/shows`,
+            `http://localhost:8000/shows`,
             "POST",
             JSON.stringify(newShow)
         )
@@ -55,7 +55,7 @@ export const ShowRepo = {
     //PUTs
     async modifyShow(modifiedShow, id) {
         return await fetchIt(
-            `http://localhost:8088/shows/${id}`,
+            `http://localhost:8000/shows/${id}`,
             "PUT",
             JSON.stringify(modifiedShow)
         )

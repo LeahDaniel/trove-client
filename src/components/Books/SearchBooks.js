@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 import { BookRepo } from "../../repositories/BookRepo"
-import { sortByName, sortByTag } from "../../repositories/FetchAndSort"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const SearchBooks = ({ userEntries, setUserEntries, taggedBooks }) => {
@@ -13,13 +12,9 @@ export const SearchBooks = ({ userEntries, setUserEntries, taggedBooks }) => {
     useEffect(
         () => {
             TagRepo.getTagsForUser(userId)
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
+                .then(setTags)
                 .then(() => BookRepo.getAuthorsForUser(userId))
-                .then(result => {
-                    setAuthors(sortByName(result))
-                })
+                .then(setAuthors)
         }, [userId]
     )
 

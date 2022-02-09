@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Button, Form, FormGroup, Input, Label } from "reactstrap"
-import { sortByTag } from "../../repositories/FetchAndSort"
 import { ShowRepo } from "../../repositories/ShowRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
@@ -13,9 +12,7 @@ export const SearchShows = ({ userEntries, setUserEntries, taggedShows }) => {
     useEffect(
         () => {
             TagRepo.getTagsForUser(userId)
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
+                .then(setTags)
                 .then(ShowRepo.getAllStreamingServices)
                 .then(setStreamingServices)
         }, [userId]
