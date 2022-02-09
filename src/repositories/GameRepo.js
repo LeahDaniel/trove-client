@@ -58,5 +58,12 @@ export const GameRepo = {
             "PUT",
             JSON.stringify(modifiedGame)
         )
+    },
+    async modifyPlatform(platformId, gameId) {
+        return await fetchIt(
+            `http://localhost:8000/games/${gameId}/platform`,
+            "PUT",
+            JSON.stringify({platform: platformId})
+        )
     }
 }

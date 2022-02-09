@@ -2,8 +2,7 @@ import React, { useState } from "react"
 import { Modal, ModalBody, ModalFooter, Button, FormGroup, Input } from "reactstrap"
 import { GameRepo } from "../../repositories/GameRepo"
 
-export const PlatformModal = ({ openBoolean, setOpenBoolean, game, addToCurrent }) => {
-    const [chosenPlatformId, setChosenPlatformId] = useState(0)
+export const PlatformModal = ({ openBoolean, setOpenBoolean, game, addToCurrent, setChosenPlatformId }) => {
 
     return (
         //control whether the modal is being displayed based on the openBoolean prop (changed when the Add to Current button on Game.js is clicked, or when close on modal is clicked)
@@ -35,18 +34,7 @@ export const PlatformModal = ({ openBoolean, setOpenBoolean, game, addToCurrent 
                 <Button
                     color="info"
                     className="text-white"
-                    onClick={() => {
-                        //on submit, delete all platforms for the present game, then re-add the one that was chosen
-                        //on this modal. Call the addToCurrent function (from props) to perform PUT operation and push user to current list
-                        GameRepo.deletePlatformsForOneGame(game)
-                            .then(() => {
-                                GameRepo.addPlatform({
-                                    gameId: game.id,
-                                    platformId: chosenPlatformId
-                                })
-                            })
-                            .then(addToCurrent)
-                    }}
+                    onClick={addToCurrent}
                 >
                     Submit
                 </Button>

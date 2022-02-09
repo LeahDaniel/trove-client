@@ -15,6 +15,7 @@ export const Game = ({ game, showDetail, setGames }) => {
     const [platformOpenBoolean, setPlatformOpenBoolean] = useState(false)
     const [recommendationOpenBoolean, setRecommendationOpenBoolean] = useState(false)
     const [successOpenBoolean, setSuccessOpenBoolean] = useState(false)
+    const [chosenPlatformId, setChosenPlatformId] = useState(0)
 
     //delete game by id. If a current game, set games with current games, else set games with queued games (to update state appropriately based on current user view)
     const deleteGame = (gameId) => {
@@ -35,8 +36,8 @@ export const Game = ({ game, showDetail, setGames }) => {
             name: game.name,
             current: true,
             multiplayer_capable: game.multiplayer_capable,
-            platforms: game.platforms,
-            tags: game.tags
+            platforms: [chosenPlatformId],
+            tags: game.tags.map(tag => tag.id)
         }, game.id)
             //after doing PUT operation, push user to the current list, where the game is now located
             .then(() => history.push("/games/current"))
@@ -49,7 +50,7 @@ export const Game = ({ game, showDetail, setGames }) => {
                 Pass state of game, addToCurrent function, and both the state and setter for the openBoolean
             */}
             <PlatformModal openBoolean={platformOpenBoolean} setOpenBoolean={setPlatformOpenBoolean}
-                game={game} addToCurrent={addToCurrent} />
+                game={game} addToCurrent={addToCurrent} setChosenPlatformId= {setChosenPlatformId} />
             {/*
                 Modal that pops up on send button click
             */}
