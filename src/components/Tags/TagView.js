@@ -5,7 +5,6 @@ import { TagList } from './TagList';
 import { TagSearch } from './TagSearch';
 
 export const TagView = () => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const [userEntry, setUserEntry] = useState("")
     const [newTagString, setNewTagString] = useState("")
     const [tags, setTags] = useState([])
@@ -16,12 +15,10 @@ export const TagView = () => {
     useEffect(
         () => {
             if (userEntry === "") {
-                TagRepo.getTagsForUser(userId)
-                    .then(setTags)
+                TagRepo.getAll().then(setTags)
                     .then(() => setIsLoading(false))
             } else {
-                TagRepo.getTagsForUserBySearchTerm(userId, userEntry)
-                    .then(setTags)
+                TagRepo.getTagsBySearchTerm(userEntry).then(setTags)
                     .then(() => setIsLoading(false))
             }
 
@@ -30,7 +27,7 @@ export const TagView = () => {
             } else {
                 setAttemptBoolean(false)
             }
-        }, [userEntry, userId]
+        }, [userEntry]
     )
 
     const constructTag = (enteredTag) => {
@@ -50,12 +47,10 @@ export const TagView = () => {
         } else {
             //post a new tag object with that enteredTag
             TagRepo.addTag({
-                tag: enteredTag,
-                userId: userId,
+                tag: enteredTag
             })
                 //after doing PUT operation, update state
-                .then(() => TagRepo.getTagsForUser(userId))
-                .then(setTags)
+                .then(TagRepo.getAll).then(setTags)
                 .then(() => setOpenBoolean(!openBoolean))
         }
 
