@@ -8,7 +8,7 @@ export const GameList = ({ setGames, games, userAttemptedSearch }) => {
                 games.length > 0
                     ? <div className="col-7 mt-4" >
                         {
-                            games.map(game => <Game key={game.id} game={game} setGames={setGames} />)
+                            games.map(game => <Game key={game.id} game={game} showDetail={true} setGames={setGames} />)
                         }
                     </div>
                     : <div

@@ -6,9 +6,9 @@ export const GameRepo = {
     async getAll(current = null) {
         //determine portion of query string parameter that sorts by current by argument of true/false/null (null is initialized)
         if (current === true) {
-            current = "&current=true"
+            current = "?current=True"
         } else if (current === false) {
-            current = "&current=false"
+            current = "?current=False"
         } else {
             current = ""
         }

@@ -7,30 +7,13 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
     const userId = parseInt(localStorage.getItem("trove_user"))
     const [platforms, setPlatforms] = useState([])
     const [tags, setTags] = useState([])
-    const [tagsForGames, setTagsForGames] = useState([])
-
 
     useEffect(
         () => {
-            GameRepo.getAllPlatforms()
-                .then(setPlatforms)
-                .then(() => TagRepo.getTagsForUser(userId))
-                .then(setTags)
+            GameRepo.getAllPlatforms().then(setPlatforms)
+            TagRepo.getAll().then(setTags)
+
         }, [userId]
-    )
-
-    useEffect(
-        () => {
-            const newArray = tags.filter(tag => {
-                const foundTag = taggedGames.find(taggedGame => taggedGame.tagId === tag.id)
-                if(foundTag){
-                    return true
-                } else {
-                    return false
-                }
-            })
-            setTagsForGames(newArray)
-        }, [taggedGames, tags]
     )
 
     //check for parameter's value in chosenPlatforms. Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)
@@ -128,8 +111,8 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
                 </Label>
                 <div>
                     {
-                        tagsForGames.length > 0
-                            ? tagsForGames.map(tag => {
+                        tags.length > 0
+                            ? tags.map(tag => {
                                 return <Button
                                     key={`tag--${tag.id}`}
                                     active={userEntries.tags.has(tag.id) ? true : false}

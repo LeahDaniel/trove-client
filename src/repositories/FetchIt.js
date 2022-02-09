@@ -7,17 +7,27 @@ export const fetchIt = (url, method = "GET", body = null) => {
         }
     }
 
+    let response = res => res.json()
+
     //evaluate the value of method, and execute the case it applies to.
     switch (method) {
         //if the method is POST, add the content-type property onto the headers property
         case "POST":
-        //fall through
+            options.headers = {
+                "Authorization": `Token ${localStorage.getItem("trove_token")}`,
+                "Content-Type": "application/json"
+            }
+            break;
         //if the method is PUT, add the content-type property onto the headers property
         case "PUT":
             options.headers = {
                 "Authorization": `Token ${localStorage.getItem("trove_token")}`,
                 "Content-Type": "application/json"
             }
+            response = ''
+            break;
+        case "DELETE":
+            response = ''
             break;
         //if the method is anything else other than the above, do nothing (break).
         default:
@@ -31,5 +41,5 @@ export const fetchIt = (url, method = "GET", body = null) => {
 
     //function returns a promise- the .then. 
     //Parses a fetch (with the url and options arguments as parameters) as javascript.
-    return fetch(url, options).then(res => res.json())
+    return fetch(url, options).then(response)
 }

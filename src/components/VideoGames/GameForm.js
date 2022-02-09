@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react"
-import { useHistory, useLocation } from "react-router"
-import { Alert, Button, Form, FormGroup, FormText, Input, Label} from "reactstrap"
+import { useHistory, useLocation, useParams } from "react-router"
+import { Alert, Button, Form, FormGroup, FormText, Input, Label } from "reactstrap"
 import { GameRepo } from "../../repositories/GameRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
+import { SocialRepo } from "../../repositories/SocialRepo"
 
 export const GameForm = () => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const history = useHistory()
-    const presentGame = useLocation().state
+    const { gameId } = useParams()
+    const [presentGame, setPresentGame] = useState(null)
     const [platforms, setPlatforms] = useState([])
     const [tags, setTags] = useState([])
     const [firstAttempt, setFirstAttempt] = useState(true)
@@ -18,7 +19,6 @@ export const GameForm = () => {
         current: null,
         multiplayerCapable: null,
         chosenPlatforms: new Set(),
-        chosenCurrentPlatform: 0,
         tagArray: []
     })
     const [invalid, setInvalid] = useState({
@@ -33,50 +33,54 @@ export const GameForm = () => {
     useEffect(
         () => {
             //on page load, GET platforms and tags
-            GameRepo.getAllPlatforms()
-                .then(setPlatforms)
-                .then(() => TagRepo.getTagsForUser(userId))
-                .then(setTags)
-                .then(() => {
-                    if (presentGame) {
-                        //on presentGame state change (when user clicks edit to be brought to form)
-                        //setUserChoices from the values of the presentGame object
+            GameRepo.getAllPlatforms().then(setPlatforms)
+            TagRepo.getAll().then(setTags)
+            
+        }, []
+    )
 
-                        //change name, current, and multiplayer values based on presentGame values
-                        const obj = {
-                            name: presentGame.name,
-                            current: presentGame.current,
-                            multiplayerCapable: presentGame.multiplayerCapable,
-                            chosenPlatforms: new Set(),
-                            chosenCurrentPlatform: 0,
-                            tagArray: []
-                        }
+    useEffect(
+        () => {
+            if(gameId){
+                SocialRepo.getCurrentUser()
+                    .then(currentUser => {
+                        GameRepo.get(parseInt(gameId))
+                            .then(game => {
+                                if(game.tags && game.platforms){
+                                    const obj = {
+                                        name: game.name,
+                                        current: game.current,
+                                        multiplayerCapable: game.multiplayer_capable,
+                                        chosenPlatforms: new Set(),
+                                        tagArray: []
+                                    }
+                                    //create a tag array from the game's associated taggedGames, and set as userChoices.tagArray value
+                        
+                                    let tagArray = []
+                                    for (const tag of game.tags) {
+                                        tagArray.push({ label: tag.tag, value: tag.id })
+                                    }
+                                    obj.tagArray = tagArray
+                        
+                                    //if a queued game (more than one platform possible), create a Set of platformIds from the game's associated gamePlatforms, and set as chosenPlatforms value
+                                    let chosenPlatforms = new Set()
+                                    for (const platform of game.platforms) {
+                                        chosenPlatforms.add(platform.id)
+                                    }
+                                    obj.chosenPlatforms = chosenPlatforms
+                        
+                                    //set user choices using the obj constructed above
+                                    setUserChoices(obj)
+                                }
+    
+                                if(currentUser.id === game.user.id){
+                                    setPresentGame(game)
+                                } 
+                            })
+                    })
 
-                        //create a tag array from the presentGame's associated taggedGames, and set as userChoices.tagArray value
-                        if (presentGame.taggedGames) {
-                            let tagArray = []
-                            for (const taggedGame of presentGame.taggedGames) {
-                                tagArray.push({ label: taggedGame.tag.tag, value: taggedGame.tag.id })
-                            }
-                            obj.tagArray = tagArray
-                        }
-                        //if a current game (only one platform possible), change chosenCurrentPlatform value based on platformId of first (and only) gamePlatform
-                        if (presentGame.current === true) {
-                            obj.chosenCurrentPlatform = presentGame.gamePlatforms[0].platformId
-                        } else {
-                            //if a queued game (more than one platform possible), create a Set of platformIds from the presentGame's associated gamePlatforms, and set as chosenPlatforms value
-                            let platformSet = new Set()
-                            for (const gamePlatform of presentGame.gamePlatforms) {
-                                platformSet.add(gamePlatform.platformId)
-                            }
-                            obj.chosenPlatforms = platformSet
-                        }
-
-                        //set user choices using the obj constructed above
-                        setUserChoices(obj)
-                    }
-                })
-        }, [userId, presentGame]
+            }
+        }, [gameId]
     )
 
     useEffect(
@@ -103,13 +107,12 @@ export const GameForm = () => {
                 obj.current = true
             }
             //single and multi platform
-            if (userChoices.chosenCurrentPlatform === 0 && userChoices.chosenPlatforms?.size === 0) {
+            if (userChoices.chosenPlatforms?.size === 0) {
                 obj.singlePlatform = true
                 obj.multiPlatforms = true
             }
 
             setInvalid(obj)
-            window.history.replaceState(null, '')
 
         }, [userChoices]
     )
@@ -119,117 +122,55 @@ export const GameForm = () => {
         const copy = { ...userChoices }
         copy.chosenPlatforms.has(id)
             ? copy.chosenPlatforms.delete(id)
-            : copy.chosenPlatforms.add(id)
+            : copy.chosenPlatforms.add(parseInt(id))
         setUserChoices(copy)
     }
 
-    //Deletes present taggedGames and gamePlatforms for presentGame being edited. 
     // Then, PUT operation to games based on userChoices.
     //Then, POST operations to tags, taggedGames, and gamePlatforms using the 
     //constructTags and constructGamePlatforms functions, with the edited game's id as an argument
     //Then, push user to current or queued based on if current on game is true or false
-    const editGame = evt => {
-        evt.preventDefault()
-
-        const gameFromUserChoices = {
-            name: userChoices.name,
-            userId: parseInt(localStorage.getItem("trove_user")),
-            current: userChoices.current,
-            multiplayerCapable: userChoices.multiplayerCapable
-        }
-
-        GameRepo.deleteGamePlatformsForOneGame(presentGame)
-            .then(() => TagRepo.deleteTaggedGamesForOneGame(presentGame))
-            .then(() => GameRepo.modifyGame(gameFromUserChoices, presentGame.id))
-            .then((addedGame) => {
-                constructTags(addedGame)
-                constructGamePlatforms(addedGame)
-            })
-            .then(() => {
-                if (userChoices.current === true) {
-                    history.push("/games/current")
-                } else {
-                    history.push("/games/queue")
-                }
-            })
-    }
-
-    //POST operation to games
-    //Then, POST operations to tags, taggedGames, and gamePlatforms using the 
-    //constructTags and constructGamePlatforms functions, with the posted game's id as an argument
-    //Then, push user to current or queued based on if current on game is true or false
-    const constructGame = evt => {
-        evt.preventDefault()
-
-        const gameFromUserChoices = {
-            name: userChoices.name,
-            userId: parseInt(localStorage.getItem("trove_user")),
-            current: userChoices.current,
-            multiplayerCapable: userChoices.multiplayerCapable
-        }
-
-        GameRepo.addGame(gameFromUserChoices)
-            .then((addedGame) => {
-                if (userChoices.tagArray) {
-                    constructTags(addedGame)
-                }
-                constructGamePlatforms(addedGame)
-            })
-            .then(() => {
-                if (userChoices.current === true) {
-                    history.push("/games/current")
-                } else {
-                    history.push("/games/queue")
-                }
-            })
-    }
-
-    //uses either the chosenPlatforms Set or the chosenCurrentPlatform id to POST each gamePlatform
-    const constructGamePlatforms = (addedGame) => {
-        if (userChoices.chosenPlatforms.size > 0) {
-            let promiseArray = []
-            for (const chosenPlatform of userChoices.chosenPlatforms) {
-                const newGamePlatform = {
-                    gameId: addedGame.id,
-                    platformId: chosenPlatform
-                }
-                promiseArray.push(GameRepo.addGamePlatform(newGamePlatform))
-            }
-            Promise.all(promiseArray)
-        } else if (userChoices.chosenCurrentPlatform !== 0) {
-            const newGamePlatform = {
-                gameId: addedGame.id,
-                platformId: userChoices.chosenCurrentPlatform
-            }
-            GameRepo.addGamePlatform(newGamePlatform)
-        }
-    }
-
-    //uses the tagArray to POST to tags (if it does not yet exist), and to POST taggedGames objects.
-    //tags will be evaluated as the same even if capitalization and spaces are different.
-    const constructTags = (addedGame) => {
+    const submitGame = () => {
+        let tagIdArray = []
+        let promiseArray = []
 
         for (const enteredTag of userChoices.tagArray) {
             if (enteredTag.__isNew__) {
                 //post a new tag object with that enteredTag
-                TagRepo.addTag({ tag: enteredTag.value, userId: userId })
-                    .then((newTag) => {
-                        TagRepo.addTaggedGame({
-                            tagId: newTag.id,
-                            gameId: addedGame.id
-                        })
-                    })
-                //post a new taggedGame object with the tag object made above
+                promiseArray.push(
+                    TagRepo.addTag({ tag: enteredTag.value })
+                        .then((res) => tagIdArray.push(res.id))
+                )
             } else {
-                //post a new taggedGame object with that tag
-                TagRepo.addTaggedGame({
-                    tagId: parseInt(enteredTag.value),
-                    gameId: addedGame.id
-                })
-
+                tagIdArray.push(enteredTag.value)
             }
         }
+
+        const gameFromUserChoices = {
+            name: userChoices.name,
+            current: userChoices.current,
+            multiplayer_capable: userChoices.multiplayerCapable,
+            tags: tagIdArray,
+            platforms: Array.from(userChoices.chosenPlatforms)
+        }
+
+        Promise.all(promiseArray)
+            .then(() => {
+                if(presentGame){
+                    GameRepo.modifyGame(gameFromUserChoices, presentGame.id)
+                } else {
+                    GameRepo.addGame(gameFromUserChoices)
+                }
+            })
+            .then(() => {
+                if (userChoices.current === true) {
+                    history.push("/games/current")
+                } else {
+                    history.push("/games/queue")
+                }
+            })
     }
+
 
     return (
         <div className="row justify-content-center my-4">
@@ -349,10 +290,8 @@ export const GameForm = () => {
                                 copy.chosenPlatforms.clear()
                             } else if (event.target.value === "Queued") {
                                 copy.current = false
-                                copy.chosenCurrentPlatform = 0
                             } else {
                                 copy.current = null
-                                copy.chosenCurrentPlatform = 0
                                 copy.chosenPlatforms.clear()
                             }
                             setUserChoices(copy)
@@ -384,11 +323,12 @@ export const GameForm = () => {
                                     id="currentSelect"
                                     type="select"
                                     invalid={!firstAttempt ? invalid.singlePlatform : false}
-                                    value={userChoices.chosenCurrentPlatform}
+                                    value={(Array.from(userChoices.chosenPlatforms))[0]}
                                     onChange={(event) => {
                                         const copy = { ...userChoices }
-                                        copy.chosenCurrentPlatform = parseInt(event.target.value)
+                                        copy.chosenPlatforms.clear()
                                         setUserChoices(copy)
+                                        setPlatform(event.target.value)
                                     }}
                                 >
                                     <option value="0">
@@ -465,11 +405,7 @@ export const GameForm = () => {
 
                         //check if every key on the "invalid" object is false
                         if (Object.keys(invalid).every(key => invalid[key] === false)) {
-                            if (presentGame?.userId) {
-                                editGame(evt)
-                            } else {
-                                constructGame(evt)
-                            }
+                            submitGame()
                         } else {
                             setAlert(true)
                         }

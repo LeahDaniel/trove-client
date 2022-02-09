@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Modal, ModalBody, ModalFooter, Button, FormGroup, Input } from "reactstrap"
 import { GameRepo } from "../../repositories/GameRepo"
 
-export const PlatformModal = ({ openBoolean, setOpenBoolean, presentGame, addToCurrent }) => {
+export const PlatformModal = ({ openBoolean, setOpenBoolean, game, addToCurrent }) => {
     const [chosenPlatformId, setChosenPlatformId] = useState(0)
 
     return (
@@ -19,12 +19,12 @@ export const PlatformModal = ({ openBoolean, setOpenBoolean, presentGame, addToC
                             setChosenPlatformId(parseInt(event.target.value))
                         }}
                     >
-                        {/* select for each platform currently associated with the presentGame object prop*/}
+                        {/* select for each platform currently associated with the game object prop*/}
                         <option value="0">Choose a platform...</option>
                         {
-                            presentGame.gamePlatforms?.map(gamePlatform => {
-                                return <option key={gamePlatform.platformId} value={gamePlatform.platformId}>
-                                    {gamePlatform.platform?.name}
+                            game.platforms.map(platform => {
+                                return <option key={platform.id} value={platform.id}>
+                                    {platform.name}
                                 </option>
                             })
                         }
@@ -36,12 +36,12 @@ export const PlatformModal = ({ openBoolean, setOpenBoolean, presentGame, addToC
                     color="info"
                     className="text-white"
                     onClick={() => {
-                        //on submit, delete all gamePlatforms for the present game, then re-add the one that was chosen
+                        //on submit, delete all platforms for the present game, then re-add the one that was chosen
                         //on this modal. Call the addToCurrent function (from props) to perform PUT operation and push user to current list
-                        GameRepo.deleteGamePlatformsForOneGame(presentGame)
+                        GameRepo.deletePlatformsForOneGame(game)
                             .then(() => {
-                                GameRepo.addGamePlatform({
-                                    gameId: presentGame.id,
+                                GameRepo.addPlatform({
+                                    gameId: game.id,
                                     platformId: chosenPlatformId
                                 })
                             })

@@ -4,28 +4,64 @@ import { SocialRepo } from "../../repositories/SocialRepo"
 
 export const RecommendationModal = ({ openBoolean, setOpenBoolean, presentGame, presentShow, presentBook, setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
     const userId = parseInt(localStorage.getItem("trove_user"))
-    const [emailEntry, setEmailEntry] = useState("")
+    const [usernameEntry, setUsernameEntry] = useState("")
     const [messageEntry, setMessageEntry] = useState("")
     const [users, setUsers] = useState([])
     const [warningBoolean, setWarningBoolean] = useState(false)
 
-    useEffect(
-        () => {
-            let mounted = true
+    const submitRecommendation = (evt) => {
+        evt.preventDefault()
 
-            SocialRepo.getAllUsers()
-                .then((result) => {
-                    if (mounted) {
-                        setUsers(result)
-                    }
+        const foundUser = SocialRepo.getUserByUsername(usernameEntry)
+
+        if (foundUser && presentGame) {
+            SocialRepo.addGameRecommendation({
+                senderId: userId,
+                recipientId: foundUser.id,
+                gameId: presentGame.id,
+                message: messageEntry,
+                read: false
+            })
+                .then(() => {
+                    setGameRecoSuccess(true)
                 })
+                .then(() => {
+                    setOpenBoolean(false)
+                })
+        } else if (foundUser && presentShow) {
+            SocialRepo.addShowRecommendation({
+                senderId: userId,
+                recipientId: foundUser.id,
+                showId: presentShow.id,
+                message: messageEntry,
+                read: false
+            })
+                .then(() => {
+                    setShowRecoSuccess(true)
+                })
+                .then(() => {
+                    setOpenBoolean(false)
+                })
+        } else if (foundUser && presentBook) {
+            SocialRepo.addBookRecommendation({
+                senderId: userId,
+                recipientId: foundUser.id,
+                bookId: presentBook.id,
+                message: messageEntry,
+                read: false
+            })
+                .then(() => {
+                    setBookRecoSuccess(true)
+                })
+                .then(() => {
+                    setOpenBoolean(false)
+                })
+        } else {
+            setWarningBoolean(true)
+        }
+    }
 
-            return () => {
-                mounted = false
-            }
 
-        }, []
-    )
 
     return (
         //control whether the modal is being displayed based on the openBoolean prop (changed when the Add to Current button on Game.js is clicked, or when close on modal is clicked)
@@ -33,15 +69,15 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, presentGame, 
             <ModalBody className="mt-4">
                 <FormGroup className="mt-4">
                     <Label>
-                        Recipient's Email
+                        Recipient's Username
                     </Label>
                     <Input
-                        id="emailEntry"
-                        name="emailEntry"
-                        placeholder="Existing User Email..."
-                        type="email"
+                        id="usernameEntry"
+                        name="usernameEntry"
+                        placeholder="Existing User's Username..."
+                        type="username"
                         onChange={(event) => {
-                            setEmailEntry(event.target.value)
+                            setUsernameEntry(event.target.value)
                         }}
                     >
                     </Input>
@@ -53,7 +89,7 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, presentGame, 
                             <Alert
                                 color="danger"
                             >
-                                This user does not exist. Please enter the email address of an existing user or click "Cancel".
+                                This user does not exist. Please enter the username of an existing user or click "Cancel".
                             </Alert>
                         </div>
                         : ""
@@ -78,60 +114,8 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, presentGame, 
                 <Button
                     color="info"
                     className="text-white"
-                    onClick={() => {
-                        const foundUser = users.find(user => user.email === emailEntry)
-
-                        if (foundUser && presentGame) {
-                            SocialRepo.addGameRecommendation({
-                                senderId: userId,
-                                recipientId: foundUser.id,
-                                gameId: presentGame.id,
-                                message: messageEntry,
-                                read: false
-                            })
-                                .then(() => {
-                                    setGameRecoSuccess(true)
-                                })
-                                .then(() => {
-                                    setOpenBoolean(false)
-                                })
-                        } else if (foundUser && presentShow) {
-                            SocialRepo.addShowRecommendation({
-                                senderId: userId,
-                                recipientId: foundUser.id,
-                                showId: presentShow.id,
-                                message: messageEntry,
-                                read: false
-                            })
-                                .then(() => {
-                                    setShowRecoSuccess(true)
-                                })
-                                .then(() => {
-                                    setOpenBoolean(false)
-                                })
-                        } else if (foundUser && presentBook) {
-                            SocialRepo.addBookRecommendation({
-                                senderId: userId,
-                                recipientId: foundUser.id,
-                                bookId: presentBook.id,
-                                message: messageEntry,
-                                read: false
-                            })
-                                .then(() => {
-                                    setBookRecoSuccess(true)
-                                })
-                                .then(() => {
-                                    setOpenBoolean(false)
-                                })
-                        } else {
-                            setWarningBoolean(true)
-                        }
-                    }
-
-
-                    }
-                >
-                    Submit
+                    onClick={submitRecommendation}
+                >Submit
                 </Button>
                 {/* set boolean state to false when cancel button is clicked to hide modal */}
                 <Button color="info" className="text-white" onClick={() => {

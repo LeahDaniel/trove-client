@@ -62,16 +62,7 @@ export const GameRecommendation = ({ gameRecommendation, setGameRecommendations 
                             </CardText>
 
                             <Button color="info" onClick={() => {
-                                history.push({
-                                    pathname: "/games/create",
-                                    state: {
-                                        name: game.name,
-                                        current: false,
-                                        multiplayerCapable: game.multiplayerCapable,
-                                        tagArray: game.taggedGames.map(taggedGame => taggedGame.tag.tag),
-                                        gamePlatforms: game.gamePlatforms
-                                    }
-                                })
+                                history.push(`/games/${game.id}/edit`)
                             }}> Add to Queue </Button>
 
                         </CardBody>
