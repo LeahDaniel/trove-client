@@ -1,4 +1,4 @@
-import { fetchIt } from "./FetchAndSort"
+import { fetchIt } from "./FetchIt"
 
 //Object (GameRepo) with methods (functions) added onto it, making each function accessible via dot notation.
 export const GameRepo = {
@@ -49,7 +49,7 @@ export const GameRepo = {
             "POST",
             JSON.stringify(newGame)
         )
-    }
+    },
 
     //PUTs
     async modifyGame(modifiedGame, id) {
