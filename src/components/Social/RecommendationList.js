@@ -26,6 +26,8 @@ export const RecommendationList = ({setNewNotification}) => {
 
     useEffect(
         () => {
+            //Mark recommendations as read once the page is done loading, 
+            //in order to control notifications
             if(!isLoading){
                 let promiseArray = []
 
