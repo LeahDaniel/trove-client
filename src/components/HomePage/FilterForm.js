@@ -7,7 +7,7 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
 
     useEffect(
         () => {
-            TagRepo.getAll().then(setTags)
+            TagRepo.getTagsOnAny().then(setTags)
         }, []
     )
 

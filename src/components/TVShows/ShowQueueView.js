@@ -5,12 +5,10 @@ import addIcon from '../../images/AddIcon.png';
 import { useHistory } from "react-router";
 import { ShowRepo } from "../../repositories/ShowRepo";
 import { Button, Card } from "reactstrap";
-import { TagRepo } from "../../repositories/TagRepo";
 
 export const ShowQueueView = () => {
     const history = useHistory()
     const [shows, setShows] = useState([])
-    const [taggedShows, setTaggedShows] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [userAttemptedSearch, setAttemptBoolean] = useState(false)
     const [userEntries, setUserEntries] = useState({
@@ -18,16 +16,6 @@ export const ShowQueueView = () => {
         service: "0",
         tags: new Set()
     })
-
-    useEffect(
-        () => {
-            TagRepo.getTaggedShows()
-                .then(result => {
-                    const onlyQueued = result.filter(taggedShow => taggedShow.show?.current === false)
-                    setTaggedShows(onlyQueued)
-                })
-        }, []
-    )
 
     useEffect(
         () => {
@@ -48,7 +36,7 @@ export const ShowQueueView = () => {
                     for (const show of midFilterShows) {
                         let booleanArray = []
                         userEntries.tags.forEach(tagId => {
-                            const foundShow = show.taggedShows?.find(taggedShow => taggedShow.tagId === tagId)
+                            const foundShow = show.tags.find(tag => tag.id === tagId)
                             if (foundShow) {
                                 booleanArray.push(true)
                             } else {
@@ -62,7 +50,7 @@ export const ShowQueueView = () => {
                     return newShowArray
                 }
 
-                const showsByServiceOnly = midFilterShows.filter(show => show.streamingServiceId === serviceId)
+                const showsByServiceOnly = midFilterShows.filter(show => show.streaming_service.id === serviceId)
                 const showsByTagAndService = showsByTagOnly().filter(show => showsByServiceOnly.includes(show))
 
                 if (noService && noTags) {
@@ -112,7 +100,7 @@ export const ShowQueueView = () => {
                     </Button>
                 </div>
 
-                <SearchShows setUserEntries={setUserEntries} userEntries={userEntries} taggedShows={taggedShows} />
+                <SearchShows setUserEntries={setUserEntries} userEntries={userEntries} />
             </div>
             {
                 isLoading

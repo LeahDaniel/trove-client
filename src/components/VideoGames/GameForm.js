@@ -126,10 +126,6 @@ export const GameForm = () => {
         setUserChoices(copy)
     }
 
-    // Then, PUT operation to games based on userChoices.
-    //Then, POST operations to tags, taggedGames, and gamePlatforms using the 
-    //constructTags and constructGamePlatforms functions, with the edited game's id as an argument
-    //Then, push user to current or queued based on if current on game is true or false
     const submitGame = () => {
         let tagIdArray = []
         let promiseArray = []

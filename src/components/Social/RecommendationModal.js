@@ -1,64 +1,50 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Modal, ModalBody, ModalFooter, Button, FormGroup, Input, Label, Alert } from "reactstrap"
 import { SocialRepo } from "../../repositories/SocialRepo"
 
-export const RecommendationModal = ({ openBoolean, setOpenBoolean, presentGame, presentShow, presentBook, setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
+export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, book, setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
     const [usernameEntry, setUsernameEntry] = useState("")
     const [messageEntry, setMessageEntry] = useState("")
-    const [users, setUsers] = useState([])
     const [warningBoolean, setWarningBoolean] = useState(false)
 
     const submitRecommendation = (evt) => {
         evt.preventDefault()
 
-        const foundUser = SocialRepo.getUserByUsername(usernameEntry)
+        SocialRepo.getUserByUsername(usernameEntry)
+            .then(foundUser => {
+                if(foundUser.message){
+                    setWarningBoolean(true)
+                } else if (game) {
+                    SocialRepo.addGameRecommendation({
+                        recipient: foundUser.id,
+                        game: game.id,
+                        message: messageEntry
+                    })
+                        .then(() => setGameRecoSuccess(true))
+                        .then(() => setOpenBoolean(false))
+                        .then(() => setWarningBoolean(false))
+                } else if (show) {
+                    SocialRepo.addShowRecommendation({
+                        recipient: foundUser.id,
+                        show: show.id,
+                        message: messageEntry
+                    })
+                        .then(() => setShowRecoSuccess(true))
+                        .then(() => setOpenBoolean(false))
+                        .then(() => setWarningBoolean(false))
+                } else if (book) {
+                    SocialRepo.addBookRecommendation({
+                        recipient: foundUser.id,
+                        book: book.id,
+                        message: messageEntry
+                    })
+                        .then(() => setBookRecoSuccess(true))
+                        .then(() => setOpenBoolean(false))
+                        .then(() => setWarningBoolean(false))
+                } 
 
-        if (foundUser && presentGame) {
-            SocialRepo.addGameRecommendation({
-                senderId: userId,
-                recipientId: foundUser.id,
-                gameId: presentGame.id,
-                message: messageEntry,
-                read: false
             })
-                .then(() => {
-                    setGameRecoSuccess(true)
-                })
-                .then(() => {
-                    setOpenBoolean(false)
-                })
-        } else if (foundUser && presentShow) {
-            SocialRepo.addShowRecommendation({
-                senderId: userId,
-                recipientId: foundUser.id,
-                showId: presentShow.id,
-                message: messageEntry,
-                read: false
-            })
-                .then(() => {
-                    setShowRecoSuccess(true)
-                })
-                .then(() => {
-                    setOpenBoolean(false)
-                })
-        } else if (foundUser && presentBook) {
-            SocialRepo.addBookRecommendation({
-                senderId: userId,
-                recipientId: foundUser.id,
-                bookId: presentBook.id,
-                message: messageEntry,
-                read: false
-            })
-                .then(() => {
-                    setBookRecoSuccess(true)
-                })
-                .then(() => {
-                    setOpenBoolean(false)
-                })
-        } else {
-            setWarningBoolean(true)
-        }
+
     }
 
 
@@ -76,9 +62,7 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, presentGame, 
                         name="usernameEntry"
                         placeholder="Existing User's Username..."
                         type="username"
-                        onChange={(event) => {
-                            setUsernameEntry(event.target.value)
-                        }}
+                        onChange={(event) => setUsernameEntry(event.target.value)}
                     >
                     </Input>
                 </FormGroup>

@@ -19,17 +19,16 @@ export const ApplicationViews = ({ setNewNotification }) => {
     const [receivedBookRecommendations, setReceivedBookRecommendations] = useState([])
     const [receivedGameRecommendations, setReceivedGameRecommendations] = useState([])
     const [receivedShowRecommendations, setReceivedShowRecommendations] = useState([])
-    const userId = localStorage.getItem("trove_user")
 
     useEffect(
         () => {
-            SocialRepo.getAllShowRecommendations(userId)
+            SocialRepo.getAllShowRecommendations()
                 .then(setReceivedShowRecommendations)
-                .then(() => SocialRepo.getAllGameRecommendations(userId))
+            SocialRepo.getAllGameRecommendations()
                 .then(setReceivedGameRecommendations)
-                .then(() => SocialRepo.getAllBookRecommendations(userId))
+            SocialRepo.getAllBookRecommendations()
                 .then(setReceivedBookRecommendations)
-        }, [userId]
+        }, []
     )
 
     useEffect(

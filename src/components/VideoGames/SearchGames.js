@@ -11,7 +11,7 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
     useEffect(
         () => {
             GameRepo.getAllPlatforms().then(setPlatforms)
-            TagRepo.getAll().then(setTags)
+            TagRepo.getTagsOnGames().then(setTags)
 
         }, [userId]
     )

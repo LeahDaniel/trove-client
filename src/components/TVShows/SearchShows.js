@@ -3,33 +3,15 @@ import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 import { ShowRepo } from "../../repositories/ShowRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
-export const SearchShows = ({ userEntries, setUserEntries, taggedShows }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
+export const SearchShows = ({ userEntries, setUserEntries }) => {
     const [tags, setTags] = useState([])
     const [streamingServices, setStreamingServices] = useState([])
-    const [tagsForShows, setTagsForShows] = useState([])
 
     useEffect(
         () => {
-            TagRepo.getTagsForUser(userId)
-                .then(setTags)
-                .then(ShowRepo.getAllStreamingServices)
-                .then(setStreamingServices)
-        }, [userId]
-    )
-
-    useEffect(
-        () => {
-            const newArray = tags.filter(tag => {
-                const foundTag = taggedShows.find(taggedShow => taggedShow.tagId === tag.id)
-                if (foundTag) {
-                    return true
-                } else {
-                    return false
-                }
-            })
-            setTagsForShows(newArray)
-        }, [taggedShows, tags]
+            TagRepo.getTagsOnShows().then(setTags)
+            ShowRepo.getAllStreamingServices().then(setStreamingServices)
+        }, []
     )
 
     //check for parameter's value in chosenPlatforms. Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)
@@ -92,8 +74,8 @@ export const SearchShows = ({ userEntries, setUserEntries, taggedShows }) => {
                 </Label>
                 <div>
                     {
-                        tagsForShows.length > 0
-                            ? tagsForShows.map(tag => {
+                        tags.length > 0
+                            ? tags.map(tag => {
                                 return <Button
                                     key={`tag--${tag.id}`}
                                     active={userEntries.tags.has(tag.id) ? true : false}

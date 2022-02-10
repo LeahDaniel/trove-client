@@ -8,17 +8,12 @@ import { SocialRepo } from "../../repositories/SocialRepo";
 
 export const BookRecommendation = ({ bookRecommendation, setBookRecommendations }) => {
     const history = useHistory()
-    const [authors, setAuthors] = useState([])
     const [book, setBook] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(
         () => {
-            BookRepo.get(bookRecommendation.bookId)
-            .then(setBook)
-            .then(BookRepo.getAllAuthors)
-            .then(setAuthors)
-            .then(() => setIsLoading(false))
+            BookRepo.get(bookRecommendation.book.id)
+                .then(setBook)
         }, [bookRecommendation]
     )
 
@@ -31,10 +26,7 @@ export const BookRecommendation = ({ bookRecommendation, setBookRecommendations 
 
     return (
         <div className="mt-4">
-            {
-                isLoading
-                ? ""
-                :<Card
+            <Card
                 body
                 color="light"
                 className="rounded shadow border-0"
@@ -43,7 +35,7 @@ export const BookRecommendation = ({ bookRecommendation, setBookRecommendations 
                     {/* onClick of delete button (trash icon) call deleteRecommendation function with argument of the id of the present book. */}
                     <button className="imgButton">
                         <img src={deleteIcon} alt="Delete" style={{ maxWidth: 35, maxHeight: 35 }} onClick={
-                            () => { return deleteRecommendation(bookRecommendation.id) }
+                            () => deleteRecommendation(bookRecommendation.id)
                         } />
                     </button>
                 </div>
@@ -55,7 +47,7 @@ export const BookRecommendation = ({ bookRecommendation, setBookRecommendations 
                     </CardTitle>
                     <CardSubtitle className="mb-3 mt-0">
                         {/* display sender name */}
-                        <em>Recommended by {bookRecommendation.sender.name}</em>
+                        <em>Recommended by {bookRecommendation.sender.username}</em>
                     </CardSubtitle>
                     <CardText className="my-3">
                         {/* display message (books as empty string if not entered on modal) */}
@@ -63,20 +55,11 @@ export const BookRecommendation = ({ bookRecommendation, setBookRecommendations 
                     </CardText>
 
                     <Button color="info" onClick={() => {
-                        history.push({
-                            pathname: "/books/create",
-                            state: {
-                                name: book.name,
-                                current: false,
-                                author: authors.find(author => book.authorId === author.id),
-                                tagArray: book.taggedBooks.map(taggedBook => taggedBook.tag.tag)
-                            }
-                        })
+                        history.push(`/books/${book.id}/edit`)
                     }}> Add to Queue </Button>
 
                 </CardBody>
             </Card>
-            }
         </div>
     )
 }
