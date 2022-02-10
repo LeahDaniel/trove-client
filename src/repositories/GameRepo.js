@@ -6,14 +6,14 @@ export const GameRepo = {
     async getAll(current = null) {
         //determine portion of query string parameter that sorts by current by argument of true/false/null (null is initialized)
         if (current === true) {
-            current = "&current=true"
+            current = "?current=True"
         } else if (current === false) {
-            current = "&current=false"
+            current = "?current=False"
         } else {
             current = ""
         }
  
-        return await fetchIt(`http://localhost:8088/games${current}`)
+        return await fetchIt(`http://localhost:8000/games${current}`)
 
     },
 
@@ -26,26 +26,26 @@ export const GameRepo = {
         } else {
             current = ""
         }
-        return await fetchIt(`http://localhost:8088/games?q=${searchTerm}${current}`)
+        return await fetchIt(`http://localhost:8000/games?q=${searchTerm}${current}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8088/games/${id}`)
+        return await fetchIt(`http://localhost:8000/games/${id}`)
     },
     async getAllPlatforms() {
-        return await fetchIt(`http://localhost:8088/platforms`)
+        return await fetchIt(`http://localhost:8000/platforms`)
     },
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8088/games/${id}`, "DELETE")
+        return await fetchIt(`http://localhost:8000/games/${id}`, "DELETE")
     },
 
 
     //POSTs
     async addGame(newGame) {
         return await fetchIt(
-            `http://localhost:8088/games`,
+            `http://localhost:8000/games`,
             "POST",
             JSON.stringify(newGame)
         )
@@ -54,9 +54,16 @@ export const GameRepo = {
     //PUTs
     async modifyGame(modifiedGame, id) {
         return await fetchIt(
-            `http://localhost:8088/games/${id}`,
+            `http://localhost:8000/games/${id}`,
             "PUT",
             JSON.stringify(modifiedGame)
+        )
+    },
+    async modifyPlatform(platformId, gameId) {
+        return await fetchIt(
+            `http://localhost:8000/games/${gameId}/platform`,
+            "PUT",
+            JSON.stringify({platform: platformId})
         )
     }
 }

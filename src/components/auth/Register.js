@@ -1,26 +1,25 @@
-import React, { useRef } from "react"
+import React, { useRef, useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import "./Auth.css"
+import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 
 export const Register = () => {
-    const firstName = useRef()
-    const lastName = useRef()
-    const username = useRef()
-    const bio = useRef()
-    const password = useRef()
-    const verifyPassword = useRef()
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [password2, setPassword2] = useState("")
     const passwordDialog = useRef()
     const history = useHistory()
 
     const handleRegister = (e) => {
         e.preventDefault()
 
-        if (password.current.value === verifyPassword.current.value) {
+        if (password === password2) {
             const newUser = {
-                "username": username.current.value,
-                "first_name": firstName.current.value,
-                "last_name": lastName.current.value,
-                "password": password.current.value
+                "username": username,
+                "first_name": firstName,
+                "last_name": lastName,
+                "password": password
             }
 
             return fetch("http://127.0.0.1:8000/register", {
@@ -35,7 +34,6 @@ export const Register = () => {
                 .then(res => {
                     if ("token" in res) {
                         localStorage.setItem("trove_token", res.token)
-                        localStorage.setItem("userId", res.userId)
                         history.push("/")
                     }
                 })
@@ -45,44 +43,49 @@ export const Register = () => {
     }
 
     return (
-        <main style={{ textAlign: "center" }}>
+        <main className="row justify-content-center my-5">
+            <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
+                <dialog className="border-0" ref={passwordDialog}>
+                    <div className="d-flex flex-column">
+                        <div>
+                            <Button close onClick={e => passwordDialog.current.close()} color="info" className="float-end" />
+                        </div>
+                        <div className="m-4 pb-3">Passwords do not match</div>
+                    </div>
+                </dialog>
 
-            <dialog className="dialog dialog--password" ref={passwordDialog}>
-                <div>Passwords do not match</div>
-                <button className="button--close" onClick={e => passwordDialog.current.close()}>Close</button>
-            </dialog>
+                <Form onSubmit={handleRegister}>
+                    <h1 className="pt-4">Trove</h1>
+                    <h5 className="pt-4">Register for an Account</h5>
+                    <FormGroup className="pt-3">
+                        <Label htmlFor="InputFirstName"> First Name </Label>
+                        <Input onChange={evt => setFirstName(evt.target.value)} type="firstName" id="firstName" className="form-control" placeholder="First Name" required autoFocus />
+                    </FormGroup>
+                    <FormGroup className="pt-3">
+                        <Label htmlFor="InputLastName"> Last Name </Label>
+                        <Input onChange={evt => setLastName(evt.target.value)} type="lastName" id="lastName" className="form-control" placeholder="Last Name" required autoFocus />
+                    </FormGroup>
+                    <FormGroup className="pt-3">
+                        <Label htmlFor="InputUsername"> Username </Label>
+                        <Input onChange={evt => setUsername(evt.target.value)} type="username" id="username" className="form-control" placeholder="Username" required autoFocus />
+                    </FormGroup>
+                    <FormGroup className="pt-3">
+                        <Label htmlFor="InputPassword"> Password </Label>
+                        <Input onChange={evt => setPassword(evt.target.value)} type="password" id="password" className="form-control" placeholder="Password" required />
+                    </FormGroup>
+                    <FormGroup className="pt-3">
+                        <label htmlFor="verifyPassword"> Verify Password </label>
+                        <input onChange={evt => setPassword2(evt.target.value)} type="password" name="verifyPassword" className="form-control" placeholder="Verify password" required />
+                    </FormGroup>
+                    <FormGroup className="pt-3" >
+                        <Button color="info" type="submit">Register</Button>
+                    </FormGroup>
+                </Form>
 
-            <form className="form--login" onSubmit={handleRegister}>
-                <h1 className="h3 mb-3 font-weight-normal">Register an account</h1>
-                <fieldset>
-                    <label htmlFor="firstName"> First Name </label>
-                    <input ref={firstName} type="text" name="firstName" className="form-control" placeholder="First name" required autoFocus />
-                </fieldset>
-                <fieldset>
-                    <label htmlFor="lastName"> Last Name </label>
-                    <input ref={lastName} type="text" name="lastName" className="form-control" placeholder="Last name" required />
-                </fieldset>
-                <fieldset>
-                    <label htmlFor="inputUsername">Username</label>
-                    <input ref={username} type="text" name="username" className="form-control" placeholder="Username" required />
-                </fieldset>
-                <fieldset>
-                    <label htmlFor="inputPassword"> Password </label>
-                    <input ref={password} type="password" name="password" className="form-control" placeholder="Password" required />
-                </fieldset>
-                <fieldset>
-                    <label htmlFor="verifyPassword"> Verify Password </label>
-                    <input ref={verifyPassword} type="password" name="verifyPassword" className="form-control" placeholder="Verify password" required />
-                </fieldset>
-                <fieldset style={{
-                    textAlign: "center"
-                }}>
-                    <button className="btn btn-1 btn-sep icon-send" type="submit">Register</button>
-                </fieldset>
-            </form>
-            <section className="link--register">
-                Already registered? <Link to="/login">Login</Link>
-            </section>
+                <section className="pt-3">
+                    Already registered? <Link to="/login">Login</Link>
+                </section>
+            </div>
         </main>
     )
 }

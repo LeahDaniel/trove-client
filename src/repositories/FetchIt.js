@@ -1,9 +1,13 @@
 //fetchIt takes parameters of a url, a method (default of "GET"), and a body (default of null)
 export const fetchIt = (url, method = "GET", body = null) => {
     let options = {
-        "method": method,
-        "headers": {}
+        method: method,
+        headers: {
+            "Authorization": `Token ${localStorage.getItem("trove_token")}`
+        }
     }
+
+    let response = res => res.json()
 
     //evaluate the value of method, and execute the case it applies to.
     switch (method) {
@@ -20,19 +24,13 @@ export const fetchIt = (url, method = "GET", body = null) => {
                 "Authorization": `Token ${localStorage.getItem("trove_token")}`,
                 "Content-Type": "application/json"
             }
+            response = ''
             break;
-        //if the method is PATCH, add the content-type property onto the headers property
-        case "PATCH":
-            options.headers = {
-                "Authorization": `Token ${localStorage.getItem("trove_token")}`,
-                "Content-Type": "application/json"
-            }
+        case "DELETE":
+            response = ''
             break;
         //if the method is anything else other than the above, do nothing (break).
         default:
-            options.headers = {
-                "Authorization": `Token ${localStorage.getItem("trove_token")}`
-            }
             break;
     }
 
@@ -43,5 +41,5 @@ export const fetchIt = (url, method = "GET", body = null) => {
 
     //function returns a promise- the .then. 
     //Parses a fetch (with the url and options arguments as parameters) as javascript.
-    return fetch(url, options).then(r => r.json())
+    return fetch(url, options).then(response)
 }

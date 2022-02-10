@@ -1,47 +1,14 @@
 import { useState, useEffect } from "react"
 import { Button, Form, FormGroup, Input, Label } from "reactstrap"
-import { sortByTag } from "../../repositories/FetchAndSort"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const FilterForm = ({ userEntries, setUserEntries }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const [tags, setTags] = useState([])
-    const [taggedGames, setTaggedGames] = useState([])
-    const [taggedShows, setTaggedShows] = useState([])
-    const [taggedBooks, setTaggedBooks] = useState([])
-    const [relevantTags, setRelevantTags] = useState([])
 
     useEffect(
         () => {
-            TagRepo.getTagsForUser(userId)
-                .then(setTags)
-                .then(TagRepo.getTaggedBooks)
-                .then(setTaggedBooks)
-                .then(TagRepo.getTaggedGames)
-                .then(setTaggedGames)
-                .then(TagRepo.getTaggedShows)
-                .then(setTaggedShows)
-        }, [userId]
-    )
-
-    useEffect(
-        () => {
-            
-                let newTagArray = []
-
-                for (const tag of tags) {
-                    const foundTaggedGame = taggedGames.find(taggedGame => taggedGame.tagId === tag.id)
-                    const foundTaggedShow = taggedShows.find(taggedShow => taggedShow.tagId === tag.id)
-                    const foundTaggedBook = taggedBooks.find(taggedBook => taggedBook.tagId === tag.id)
-
-                    if (foundTaggedBook || foundTaggedGame || foundTaggedShow) {
-                        newTagArray.push(tag)
-                    }
-                }
-
-                setRelevantTags(sortByTag(newTagArray))
-
-        }, [tags, taggedGames, taggedShows, taggedBooks]
+            TagRepo.getTagsOnAny().then(setTags)
+        }, []
     )
 
     //check for parameter's value in userEntries.tags Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)
@@ -81,8 +48,8 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
                     </Label>
                     <div className="d-flex flex-row flex-wrap justify-content-start">
                         {
-                            relevantTags.length > 0
-                                ? relevantTags.map(tag => {
+                            tags.length > 0
+                                ? tags.map(tag => {
                                     return <Button
                                         key={`tag--${tag.id}`}
                                         active={userEntries.tags.has(tag.id) ? true : false}

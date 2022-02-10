@@ -1,39 +1,17 @@
 import React, { useEffect, useState } from "react"
 import { Button, Form, FormGroup, Input, Label } from "reactstrap"
-import { sortByTag } from "../../repositories/FetchAndSort"
 import { GameRepo } from "../../repositories/GameRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const [platforms, setPlatforms] = useState([])
     const [tags, setTags] = useState([])
-    const [tagsForGames, setTagsForGames] = useState([])
-
 
     useEffect(
         () => {
-            GameRepo.getAllPlatforms()
-                .then(setPlatforms)
-                .then(() => TagRepo.getTagsForUser(userId))
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
-        }, [userId]
-    )
-
-    useEffect(
-        () => {
-            const newArray = tags.filter(tag => {
-                const foundTag = taggedGames.find(taggedGame => taggedGame.tagId === tag.id)
-                if(foundTag){
-                    return true
-                } else {
-                    return false
-                }
-            })
-            setTagsForGames(newArray)
-        }, [taggedGames, tags]
+            GameRepo.getAllPlatforms().then(setPlatforms)
+            TagRepo.getTagsOnGames().then(setTags)
+        }, []
     )
 
     //check for parameter's value in chosenPlatforms. Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)
@@ -131,8 +109,8 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
                 </Label>
                 <div>
                     {
-                        tagsForGames.length > 0
-                            ? tagsForGames.map(tag => {
+                        tags.length > 0
+                            ? tags.map(tag => {
                                 return <Button
                                     key={`tag--${tag.id}`}
                                     active={userEntries.tags.has(tag.id) ? true : false}

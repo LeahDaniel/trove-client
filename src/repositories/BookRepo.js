@@ -1,4 +1,4 @@
-import { fetchIt } from "./FetchAndSort"
+import { fetchIt } from "./FetchIt"
 
 //Object (BookRepo) with methods (functions) added onto it, making each function accessible via dot notation.
 export const BookRepo = {
@@ -6,14 +6,14 @@ export const BookRepo = {
     async getAll(current = null) {
         //determine portion of query string parameter that sorts by current by argument of true/false/null (null is initialized)
         if (current === true) {
-            current = "&current=true"
+            current = "?current=True"
         } else if (current === false) {
-            current = "&current=false"
+            current = "?current=False"
         } else {
             current = ""
         }
  
-        return await fetchIt(`http://localhost:8088/books${current}`)
+        return await fetchIt(`http://localhost:8000/books${current}`)
 
     },
 
@@ -26,36 +26,47 @@ export const BookRepo = {
         } else {
             current = ""
         }
-        return await fetchIt(`http://localhost:8088/books?q=${searchTerm}${current}`)
+        return await fetchIt(`http://localhost:8000/books?q=${searchTerm}${current}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8088/books/${id}`)
+        return await fetchIt(`http://localhost:8000/books/${id}`)
     },
 
     async getAllAuthors() {
-        return await fetchIt(`http://localhost:8088/authors`)
+        return await fetchIt(`http://localhost:8000/authors`)
+    },
+
+    async getAuthorsByName(nameString) {
+        return await fetchIt(`http://localhost:8000/authors?name=${nameString}`)
     },
 
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8088/books/${id}`, "DELETE")
+        return await fetchIt(`http://localhost:8000/books/${id}`, "DELETE")
     },
 
     //POSTs
     async addBook(newBook) {
         return await fetchIt(
-            `http://localhost:8088/books`,
+            `http://localhost:8000/books`,
             "POST",
             JSON.stringify(newBook)
+        )
+    },
+    async addAuthor(newAuthor) {
+        return await fetchIt(
+            `http://localhost:8000/authors`,
+            "POST",
+            JSON.stringify(newAuthor)
         )
     },
 
     //PUTs
     async modifyBook(modifiedBook, id) {
         return await fetchIt(
-            `http://localhost:8088/books/${id}`,
+            `http://localhost:8000/books/${id}`,
             "PUT",
             JSON.stringify(modifiedBook)
         )

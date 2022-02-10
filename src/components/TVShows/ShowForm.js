@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react"
-import { useHistory, useLocation } from "react-router"
+import { useHistory, useParams } from "react-router"
 import { Alert, Button, Form, FormGroup, FormText, Input, Label } from "reactstrap"
 import { ShowRepo } from "../../repositories/ShowRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
-import { sortByTag } from "../../repositories/FetchAndSort"
+import { SocialRepo } from "../../repositories/SocialRepo"
 
 export const ShowForm = () => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const history = useHistory()
-    const presentShow = useLocation().state
+    const { showId } = useParams()
+    const [presentShow, setPresentShow] = useState(null)
     const [streamingServices, setStreamingServices] = useState([])
     const [tags, setTags] = useState([])
     const [firstAttempt, setFirstAttempt] = useState(true)
@@ -30,41 +30,45 @@ export const ShowForm = () => {
     useEffect(
         () => {
             //on page load, GET streaming services and tags
-            TagRepo.getTagsForUser(userId)
-                .then(result => {
-                    setTags(sortByTag(result))
-                })
-                .then(ShowRepo.getAllStreamingServices)
-                .then(setStreamingServices)
-                .then(() => {
-                    if (presentShow) {
-                        //on presentShow state change (when user clicks edit to be brought to form)
-                        //setUserChoices from the values of the presentShow object
-
-                        //change name, current, and multiplayer values based on presentShow values
-                        const obj = {
-                            name: presentShow.name,
-                            current: presentShow.current,
-                            streamingService: presentShow.streamingServiceId,
-                            tagArray: []
-                        }
-
-                        //create a tag array from the presentShow's associated taggedShows, and set as userChoices.tagArray value
-                        if (presentShow.taggedShows) {
-                            let tagArray = []
-                            for (const taggedShow of presentShow.taggedShows) {
-                                tagArray.push({ label: taggedShow.tag.tag, value: taggedShow.tag.id })
-                            }
-                            obj.tagArray = tagArray
-                        }
-
-                        //set user choices using the obj constructed above
-                        setUserChoices(obj)
-
-                    }
-                })
-        }, [userId, presentShow]
+            TagRepo.getAll().then(setTags)
+            ShowRepo.getAllStreamingServices().then(setStreamingServices)
+        }, []
     )
+
+    useEffect(() => {
+        if (showId) {
+            SocialRepo.getCurrentUser()
+                .then(currentUser => {
+                    ShowRepo.get(parseInt(showId))
+                        .then(show => {
+                            if (show.tags) {
+                                //change name, current, and multiplayer values based on presentShow values
+                                const obj = {
+                                    name: show.name,
+                                    current: show.current,
+                                    streamingService: show.streaming_service.id,
+                                    tagArray: []
+                                }
+
+                                //create a tag array from the show's associated taggedShows, and set as userChoices.tagArray value
+                                let tagArray = []
+                                for (const tag of show.tags) {
+                                    tagArray.push({ label: tag.tag, value: tag.id })
+                                }
+                                obj.tagArray = tagArray
+
+                                //set user choices using the obj constructed above
+                                setUserChoices(obj)
+                            }
+
+                            if (currentUser.id === show.user.id) {
+                                setPresentShow(show)
+                            }
+                        })
+                })
+        }
+
+    }, [showId])
 
     useEffect(
         () => {
@@ -88,94 +92,49 @@ export const ShowForm = () => {
             }
 
             setInvalid(obj)
-            window.history.replaceState(null, '')
         }, [userChoices]
     )
 
-    //Deletes present taggedShows and showPlatforms for presentShow being edited. 
-    // Then, PUT operation to shows based on userChoices.
-    //Then, POST operations to tags, taggedShows, and showPlatforms using the 
-    //constructTags and constructShowPlatforms functions, with the edited show's id as an argument
-    //Then, push user to current or queued based on if current on show is true or false
-    const editShow = evt => {
-        evt.preventDefault()
+    const submitShow = () => {
+        let tagIdArray = []
+        let promiseArray = []
 
-        const showFromUserChoices = {
-            name: userChoices.name,
-            userId: parseInt(localStorage.getItem("trove_user")),
-            current: userChoices.current,
-            streamingServiceId: userChoices.streamingService
-        }
-
-
-        TagRepo.deleteTaggedShowsForOneShow(presentShow)
-            .then(() => ShowRepo.modifyShow(showFromUserChoices, presentShow.id))
-            .then((addedShow) => {
-                constructTags(addedShow)
-            })
-            .then(() => {
-                if (userChoices.current === true) {
-                    history.push("/shows/current")
-                } else {
-                    history.push("/shows/queue")
-                }
-            })
-    }
-
-    //POST operation to shows
-    //Then, POST operations to tags, taggedShows, and showPlatforms using the 
-    //constructTags and constructShowPlatforms functions, with the posted show's id as an argument
-    //Then, push user to current or queued based on if current on show is true or false
-    const constructShow = evt => {
-        evt.preventDefault()
-
-        const showFromUserChoices = {
-            name: userChoices.name,
-            userId: parseInt(localStorage.getItem("trove_user")),
-            current: userChoices.current,
-            streamingServiceId: userChoices.streamingService
-        }
-
-        ShowRepo.addShow(showFromUserChoices)
-            .then((addedShow) => {
-                if (userChoices.tagArray) {
-                    constructTags(addedShow)
-                }
-            })
-            .then(() => {
-                if (userChoices.current === true) {
-                    history.push("/shows/current")
-                } else {
-                    history.push("/shows/queue")
-                }
-            })
-    }
-
-
-    //uses the tagArray to POST to tags (if it does not yet exist), and to POST taggedShows objects.
-    //tags will be evaluated as the same even if capitalization and spaces are different.
-    const constructTags = (addedShow) => {
         for (const enteredTag of userChoices.tagArray) {
             if (enteredTag.__isNew__) {
                 //post a new tag object with that enteredTag
-                TagRepo.addTag({ tag: enteredTag.value, userId: userId })
-                    .then((newTag) => {
-                        TagRepo.addTaggedShow({
-                            tagId: newTag.id,
-                            showId: addedShow.id
-                        })
-                    })
-                //post a new taggedShow object with the tag object made above
+                promiseArray.push(
+                    TagRepo.addTag({ tag: enteredTag.value })
+                        .then((res) => tagIdArray.push(res.id))
+                )
             } else {
-                //post a new taggedShow object with that tag
-                TagRepo.addTaggedShow({
-                    tagId: parseInt(enteredTag.value),
-                    showId: addedShow.id
-                })
-
+                tagIdArray.push(enteredTag.value)
             }
         }
+
+        const showFromUserChoices = {
+            name: userChoices.name,
+            current: userChoices.current,
+            streaming_service: userChoices.streamingService,
+            tags: tagIdArray,
+        }
+
+        Promise.all(promiseArray)
+            .then(() => {
+                if (presentShow) {
+                    ShowRepo.modifyShow(showFromUserChoices, presentShow.id)
+                } else {
+                    ShowRepo.addShow(showFromUserChoices)
+                }
+            })
+            .then(() => {
+                if (userChoices.current === true) {
+                    history.push("/shows/current")
+                } else {
+                    history.push("/shows/queue")
+                }
+            })
     }
+
 
     return (
         <div className="row justify-content-center my-4">
@@ -228,7 +187,7 @@ export const ShowForm = () => {
                 </FormGroup>
                 {
                     presentShow?.tagArray?.length > 0
-                        ? <Alert color="success" style={{fontSize: 15}} className="p-2 border rounded-0">The user who recommended this used the tags: {presentShow.tagArray.join(", ")}</Alert>
+                        ? <Alert color="success" style={{ fontSize: 15 }} className="p-2 border rounded-0">The user who recommended this used the tags: {presentShow.tagArray.join(", ")}</Alert>
                         : ""
                 }
                 <FormGroup>
@@ -332,11 +291,7 @@ export const ShowForm = () => {
 
                         //check if every key on the "invalid" object is false
                         if (Object.keys(invalid).every(key => invalid[key] === false)) {
-                            if (presentShow?.userId) {
-                                editShow(evt)
-                            } else {
-                                constructShow(evt)
-                            }
+                            submitShow()
                         } else {
                             setAlert(true)
                         }

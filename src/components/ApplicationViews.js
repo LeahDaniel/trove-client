@@ -19,17 +19,16 @@ export const ApplicationViews = ({ setNewNotification }) => {
     const [receivedBookRecommendations, setReceivedBookRecommendations] = useState([])
     const [receivedGameRecommendations, setReceivedGameRecommendations] = useState([])
     const [receivedShowRecommendations, setReceivedShowRecommendations] = useState([])
-    const userId = localStorage.getItem("trove_user")
 
     useEffect(
         () => {
-            SocialRepo.getAllShowRecommendations(userId)
+            SocialRepo.getAllShowRecommendations()
                 .then(setReceivedShowRecommendations)
-                .then(() => SocialRepo.getAllGameRecommendations(userId))
+            SocialRepo.getAllGameRecommendations()
                 .then(setReceivedGameRecommendations)
-                .then(() => SocialRepo.getAllBookRecommendations(userId))
+            SocialRepo.getAllBookRecommendations()
                 .then(setReceivedBookRecommendations)
-        }, [userId]
+        }, []
     )
 
     useEffect(
@@ -55,6 +54,9 @@ export const ApplicationViews = ({ setNewNotification }) => {
             <Route exact path="/games/create">
                 <GameForm />
             </Route>
+            <Route exact path="/games/:gameId(\d+)/edit">
+                <GameForm />
+            </Route>
             <Route exact path="/games/queue">
                 <GameQueueView />
             </Route>
@@ -64,6 +66,9 @@ export const ApplicationViews = ({ setNewNotification }) => {
             <Route exact path="/shows/create">
                 <ShowForm />
             </Route>
+            <Route exact path="/shows/:showId(\d+)/edit">
+                <ShowForm />
+            </Route>
             <Route exact path="/shows/queue">
                 <ShowQueueView />
             </Route>
@@ -71,6 +76,9 @@ export const ApplicationViews = ({ setNewNotification }) => {
                 <CurrentBooksView />
             </Route>
             <Route exact path="/books/create">
+                <BookForm />
+            </Route>
+            <Route exact path="/books/:bookId(\d+)/edit">
                 <BookForm />
             </Route>
             <Route exact path="/books/queue">

@@ -5,16 +5,14 @@ import notificationIcon from "../../images/NotificationIcon.png"
 import { SocialRepo } from "../../repositories/SocialRepo"
 
 export const NavBar = ({newNotification}) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     //initialize state to open and close navbar when toggler is clicked.
     const [isOpen, setIsOpen] = useState(false)
     const [user, setUser] = useState({})
 
     useEffect(
         () => {
-            SocialRepo.getUser(userId)
-                .then(setUser)
-        }, [userId]
+            SocialRepo.getCurrentUser().then(setUser)
+        }, []
     )
 
     return (
@@ -119,11 +117,11 @@ export const NavBar = ({newNotification}) => {
                     </NavItem>
                     <NavItem className="d-flex flex-column align-self-start gradient2 border border-primary px-2 py-1 mt-1 rounded">
                         <NavbarText className="p-0 align-self-start text-black">
-                            {user.name}
+                            {user.first_name} {user.last_name}
                         </NavbarText>
                         <NavLink className="text-navLink p-0 align-self-start" href="/login" onClick={
                             () => {
-                                localStorage.removeItem("trove_user")
+                                localStorage.removeItem("trove_token")
                             }
                         }>
                             Logout

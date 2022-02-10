@@ -5,12 +5,10 @@ import addIcon from '../../images/AddIcon.png';
 import { useHistory } from "react-router";
 import { BookRepo } from "../../repositories/BookRepo";
 import { Button, Card } from "reactstrap";
-import { TagRepo } from "../../repositories/TagRepo";
 
 export const CurrentBooksView = () => {
     const history = useHistory()
     const [books, setBooks] = useState([])
-    const [taggedBooks, setTaggedBooks] = useState([])
     const [userAttemptedSearch, setAttemptBoolean] = useState(false)
     const [isLoading, setLoading] = useState(true)
     const [userEntries, setUserEntries] = useState({
@@ -18,17 +16,6 @@ export const CurrentBooksView = () => {
         author: "0",
         tags: new Set()
     })
-
-
-    useEffect(
-        () => {
-            TagRepo.getTaggedBooks()
-                .then(result => {
-                    const onlyCurrent = result.filter(taggedBook => taggedBook.book?.current === true)
-                    setTaggedBooks(onlyCurrent)
-                })
-        }, []
-    )
 
     useEffect(
         () => {
@@ -49,7 +36,7 @@ export const CurrentBooksView = () => {
                     for (const book of midFilterBooks) {
                         let booleanArray = []
                         userEntries.tags.forEach(tagId => {
-                            const foundBook = book.taggedBooks?.find(taggedBook => taggedBook.tagId === tagId)
+                            const foundBook = book.tags?.find(tag => tag.id === tagId)
                             if (foundBook) {
                                 booleanArray.push(true)
                             } else {
@@ -62,7 +49,7 @@ export const CurrentBooksView = () => {
                     }
                     return newBookArray
                 }
-                const booksByAuthorOnly = midFilterBooks.filter(book => book.authorId === authorId)
+                const booksByAuthorOnly = midFilterBooks.filter(book => book.author.id === authorId)
                 const booksByTagAndAuthor = booksByTagOnly().filter(book => booksByAuthorOnly.includes(book))
 
                 if (noAuthor && noTags) {
@@ -111,7 +98,7 @@ export const CurrentBooksView = () => {
                     </Button>
                 </div>
 
-                <SearchBooks setUserEntries={setUserEntries} userEntries={userEntries} taggedBooks={taggedBooks} />
+                <SearchBooks setUserEntries={setUserEntries} userEntries={userEntries} />
             </div>
             {
                 isLoading

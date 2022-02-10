@@ -5,12 +5,10 @@ import addIcon from '../../images/AddIcon.png';
 import { useHistory } from "react-router";
 import { GameRepo } from "../../repositories/GameRepo";
 import { Button, Card } from "reactstrap";
-import { TagRepo } from "../../repositories/TagRepo";
 
 export const CurrentGamesView = () => {
     const history = useHistory()
     const [games, setGames] = useState([])
-    const [taggedGames, setTaggedGames] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [userAttemptedSearch, setAttemptBoolean] = useState(false)
     const [userEntries, setUserEntries] = useState({
@@ -19,16 +17,6 @@ export const CurrentGamesView = () => {
         platform: "0",
         tags: new Set()
     })
-
-    useEffect(
-        () => {
-            TagRepo.getTaggedGames()
-                .then(result => {
-                    const onlyCurrent = result.filter(taggedGame => taggedGame.game?.current === true)
-                    setTaggedGames(onlyCurrent)
-                })
-        }, []
-    )
 
     useEffect(
         () => {
@@ -52,7 +40,7 @@ export const CurrentGamesView = () => {
                     for (const game of midFilterGames) {
                         let booleanArray = []
                         userEntries.tags.forEach(tagId => {
-                            const foundGame = game.taggedGames?.find(taggedGame => taggedGame.tagId === tagId)
+                            const foundGame = game.tags.find(tag => tag.id === tagId)
                             if (foundGame) {
                                 booleanArray.push(true)
                             } else {
@@ -66,14 +54,14 @@ export const CurrentGamesView = () => {
                     return newGameArray
                 }
                 const gamesByPlatformOnly = midFilterGames.filter(game => {
-                    const foundGamePlatform = game.gamePlatforms.find(gamePlatform => gamePlatform.platformId === platformId)
-                    if (foundGamePlatform) {
+                    const foundPlatform = game.platforms.find(platform => platform.id === platformId)
+                    if (foundPlatform) {
                         return true
                     } else {
                         return false
                     }
                 })
-                const gamesByMultiplayerOnly = midFilterGames.filter(game => game.multiplayerCapable === multiplayerBoolean)
+                const gamesByMultiplayerOnly = midFilterGames.filter(game => game.multiplayer_capable === multiplayerBoolean)
                 const gamesByMultiplayerAndPlatform = gamesByMultiplayerOnly.filter(game => gamesByPlatformOnly.includes(game))
                 const gamesByMultiplayerAndTag = gamesByMultiplayerOnly.filter(game => gamesByTagOnly().includes(game))
                 const gamesByTagAndPlatform = gamesByTagOnly().filter(game => gamesByPlatformOnly.includes(game))
@@ -142,7 +130,7 @@ export const CurrentGamesView = () => {
                     </Button>
                 </div>
 
-                <SearchGames setUserEntries={setUserEntries} userEntries={userEntries} taggedGames={taggedGames} />
+                <SearchGames setUserEntries={setUserEntries} userEntries={userEntries} />
             </div>
             {
                 isLoading
