@@ -4,32 +4,14 @@ import { BookRepo } from "../../repositories/BookRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const SearchBooks = ({ userEntries, setUserEntries, taggedBooks }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const [tags, setTags] = useState([])
-    const [tagsForBooks, setTagsForBooks] = useState([])
     const [authors, setAuthors] = useState([])
 
     useEffect(
         () => {
-            TagRepo.getTagsForUser(userId)
-                .then(setTags)
-                .then(() => BookRepo.getAuthorsForUser(userId))
-                .then(setAuthors)
-        }, [userId]
-    )
-
-    useEffect(
-        () => {
-            const newArray = tags.filter(tag => {
-                const foundTag = taggedBooks.find(taggedBook => taggedBook.tagId === tag.id)
-                if (foundTag) {
-                    return true
-                } else {
-                    return false
-                }
-            })
-            setTagsForBooks(newArray)
-        }, [taggedBooks, tags]
+            TagRepo.getTagsOnBooks().then(setTags)
+            BookRepo.getAllAuthors().then(setAuthors)
+        }, []
     )
 
     //check for parameter's value in chosenPlatforms. Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)
@@ -92,8 +74,8 @@ export const SearchBooks = ({ userEntries, setUserEntries, taggedBooks }) => {
                 </Label>
                 <div>
                     {
-                        tagsForBooks.length > 0
-                            ? tagsForBooks.map(tag => {
+                        tags.length > 0
+                            ? tags.map(tag => {
                                 return <Button
                                     key={`tag--${tag.id}`}
                                     active={userEntries.tags.has(tag.id) ? true : false}

@@ -72,22 +72,23 @@ export const SocialRepo = {
         )
     },
 
-    //PUTs (These will only change the "read" boolean to true on the server side)
-    async modifyBookRecommendation(id) {
+    //PUTs (These will change the "read" boolean to true on the server side for 
+    // all of the user's recommendations)
+    async readBookRecommendations() {
         return await fetchIt(
-            `http://localhost:8000/bookRecommendations/${id}`,
+            `http://localhost:8000/bookRecommendations/read`,
             "PUT"
         )
     },
-    async modifyShowRecommendation(id) {
+    async readShowRecommendations() {
         return await fetchIt(
-            `http://localhost:8000/showRecommendations/${id}`,
+            `http://localhost:8000/showRecommendations/read`,
             "PUT"
         )
     },
-    async modifyGameRecommendation(id) {
+    async readGameRecommendations() {
         return await fetchIt(
-            `http://localhost:8000/gameRecommendations/${id}`,
+            `http://localhost:8000/gameRecommendations/read`,
             "PUT"
         )
     },

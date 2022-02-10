@@ -1,6 +1,5 @@
-import React, { useState } from "react"
+import React from "react"
 import { Modal, ModalBody, ModalFooter, Button, FormGroup, Input } from "reactstrap"
-import { GameRepo } from "../../repositories/GameRepo"
 
 export const PlatformModal = ({ openBoolean, setOpenBoolean, game, addToCurrent, setChosenPlatformId }) => {
 

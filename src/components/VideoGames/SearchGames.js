@@ -4,7 +4,6 @@ import { GameRepo } from "../../repositories/GameRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
-    const userId = parseInt(localStorage.getItem("trove_user"))
     const [platforms, setPlatforms] = useState([])
     const [tags, setTags] = useState([])
 
@@ -12,8 +11,7 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
         () => {
             GameRepo.getAllPlatforms().then(setPlatforms)
             TagRepo.getTagsOnGames().then(setTags)
-
-        }, [userId]
+        }, []
     )
 
     //check for parameter's value in chosenPlatforms. Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)

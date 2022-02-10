@@ -1,11 +1,11 @@
-import React, { useRef } from "react"
+import React, { useRef, useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import "./Auth.css"
+import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 
 
 export const Login = () => {
-    const username = useRef()
-    const password = useRef()
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
     const invalidDialog = useRef()
     const history = useHistory()
 
@@ -19,15 +19,14 @@ export const Login = () => {
                 "Accept": "application/json"
             },
             body: JSON.stringify({
-                username: username.current.value,
-                password: password.current.value
+                username: username,
+                password: password
             })
         })
             .then(res => res.json())
             .then(res => {
                 if ("valid" in res && res.valid && "token" in res) {
                     localStorage.setItem("trove_token", res.token)
-                    localStorage.setItem("userId", res.userId)
                     history.push("/")
                 }
                 else {
@@ -37,33 +36,37 @@ export const Login = () => {
     }
 
     return (
-        <main className="container--login">
-            <dialog className="dialog dialog--auth" ref={invalidDialog}>
-                <div>Username or password was not valid.</div>
-                <button className="button--close" onClick={e => invalidDialog.current.close()}>Close</button>
-            </dialog>
-            <section>
-                <form className="form--login" onSubmit={handleLogin}>
-                    <h1>Trove</h1>
-                    <h2>Please sign in</h2>
-                    <fieldset>
-                        <label htmlFor="inputUsername"> Username address </label>
-                        <input ref={username} type="username" id="username" className="form-control" placeholder="Username address" required autoFocus />
-                    </fieldset>
-                    <fieldset>
-                        <label htmlFor="inputPassword"> Password </label>
-                        <input ref={password} type="password" id="password" className="form-control" placeholder="Password" required />
-                    </fieldset>
-                    <fieldset style={{
-                        textAlign: "center"
-                    }}>
-                        <button className="btn btn-1 btn-sep icon-send" type="submit">Sign In</button>
-                    </fieldset>
-                </form>
-            </section>
-            <section className="link--register">
-                <Link to="/register">Not a member yet?</Link>
-            </section>
+        <main className="row justify-content-center my-5">
+            <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
+                <dialog className="border-0" ref={invalidDialog}>
+                    <div className="d-flex flex-column">
+                        <div>
+                            <Button className="float-end" close onClick={e => invalidDialog.current.close()}></Button>
+                        </div>
+                        <div className="m-4 pb-3">Username or password was not valid.</div>
+                    </div>
+                </dialog>
+
+                <Form onSubmit={handleLogin}>
+                    <h1 className="pt-4">Trove</h1>
+                    <h5 className="pt-4">Please Sign In</h5>
+                    <FormGroup className="pt-3">
+                        <Label htmlFor="InputUsername"> Username </Label>
+                        <Input onChange={evt => setUsername(evt.target.value)} type="username" id="username" className="form-control" placeholder="Username" required autoFocus />
+                    </FormGroup>
+                    <FormGroup className="pt-3">
+                        <Label htmlFor="InputPassword"> Password </Label>
+                        <Input onChange={evt => setPassword(evt.target.value)} type="password" id="password" className="form-control" placeholder="Password" required />
+                    </FormGroup>
+                    <FormGroup className="pt-3" >
+                        <Button color="info" type="submit">Sign In</Button>
+                    </FormGroup>
+                </Form>
+
+                <section className="pt-3">
+                    <Link to="/register">Not a member yet?</Link>
+                </section>
+            </div>
         </main>
     )
 }

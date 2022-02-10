@@ -15,26 +15,10 @@ export const RecommendationList = ({ setNewNotification }) => {
             SocialRepo.getAllBookRecommendations().then(setBookRecommendations)
             SocialRepo.getAllShowRecommendations().then(setShowRecommendations)
             setNewNotification(false)
+            SocialRepo.readBookRecommendations()
+            SocialRepo.readGameRecommendations()
+            SocialRepo.readShowRecommendations()
         }, []
-    )
-
-    useEffect(
-        () => {
-            //Mark recommendations as read once the page is done loading, 
-            //in order to control notifications
-            let promiseArray = []
-
-            for (const gameReco of gameRecommendations) {
-                promiseArray.push(SocialRepo.modifyGameRecommendation(gameReco.id))
-            }
-            for (const showReco of showRecommendations) {
-                promiseArray.push(SocialRepo.modifyShowRecommendation(showReco.id))
-            }
-            for (const bookReco of bookRecommendations) {
-                promiseArray.push(SocialRepo.modifyBookRecommendation(bookReco.id))
-            }
-            Promise.all(promiseArray)
-        }, [gameRecommendations, bookRecommendations, showRecommendations]
     )
 
     return (
@@ -48,7 +32,7 @@ export const RecommendationList = ({ setNewNotification }) => {
                             {gameRecommendations.map(recommendation => <GameRecommendation key={recommendation.id} gameRecommendation={recommendation} setGameRecommendations={setGameRecommendations} />)}
                             {showRecommendations.map(recommendation => <ShowRecommendation key={recommendation.id} showRecommendation={recommendation} setShowRecommendations={setShowRecommendations} />)}
                             {bookRecommendations.map(recommendation => <BookRecommendation key={recommendation.id} bookRecommendation={recommendation} setBookRecommendations={setBookRecommendations} />)}
-                        
+
                         </div>
                         : <div
                             className="mt-5 pt-5 border-0 d-flex align-items-center justify-content-center"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useHistory, useLocation, useParams } from "react-router"
+import { useHistory, useParams } from "react-router"
 import { Alert, Button, Form, FormGroup, FormText, Input, Label } from "reactstrap"
 import { GameRepo } from "../../repositories/GameRepo"
 import { TagRepo } from "../../repositories/TagRepo"
@@ -12,6 +12,7 @@ export const GameForm = () => {
     const [presentGame, setPresentGame] = useState(null)
     const [platforms, setPlatforms] = useState([])
     const [tags, setTags] = useState([])
+    const [tagRecoString, setTagRecoString] = useState("")
     const [firstAttempt, setFirstAttempt] = useState(true)
     const [alert, setAlert] = useState(false)
     const [userChoices, setUserChoices] = useState({
@@ -35,18 +36,18 @@ export const GameForm = () => {
             //on page load, GET platforms and tags
             GameRepo.getAllPlatforms().then(setPlatforms)
             TagRepo.getAll().then(setTags)
-            
+
         }, []
     )
 
     useEffect(
         () => {
-            if(gameId){
+            if (gameId) {
                 SocialRepo.getCurrentUser()
                     .then(currentUser => {
                         GameRepo.get(parseInt(gameId))
                             .then(game => {
-                                if(game.tags && game.platforms){
+                                if (game.tags && game.platforms) {
                                     const obj = {
                                         name: game.name,
                                         current: game.current,
@@ -55,27 +56,36 @@ export const GameForm = () => {
                                         tagArray: []
                                     }
                                     //create a tag array from the game's associated taggedGames, and set as userChoices.tagArray value
-                        
+
                                     let tagArray = []
                                     for (const tag of game.tags) {
                                         tagArray.push({ label: tag.tag, value: tag.id })
                                     }
-                                    obj.tagArray = tagArray
-                        
+                                    if (currentUser.id === game.user.id) {
+                                        let tagArray = []
+                                        for (const tag of game.tags) {
+                                            tagArray.push({ label: tag.tag, value: tag.id })
+                                        }
+                                        obj.tagArray = tagArray
+                                    } else {
+                                        const tagArray = game.tags.map(tag => tag.tag)
+                                        setTagRecoString(tagArray.join(", "))
+                                    }
+
                                     //if a queued game (more than one platform possible), create a Set of platformIds from the game's associated gamePlatforms, and set as chosenPlatforms value
                                     let chosenPlatforms = new Set()
                                     for (const platform of game.platforms) {
                                         chosenPlatforms.add(platform.id)
                                     }
                                     obj.chosenPlatforms = chosenPlatforms
-                        
+
                                     //set user choices using the obj constructed above
                                     setUserChoices(obj)
                                 }
-    
-                                if(currentUser.id === game.user.id){
+
+                                if (currentUser.id === game.user.id) {
                                     setPresentGame(game)
-                                } 
+                                }
                             })
                     })
 
@@ -152,7 +162,7 @@ export const GameForm = () => {
 
         Promise.all(promiseArray)
             .then(() => {
-                if(presentGame){
+                if (presentGame) {
                     GameRepo.modifyGame(gameFromUserChoices, presentGame.id)
                 } else {
                     GameRepo.addGame(gameFromUserChoices)
@@ -218,8 +228,8 @@ export const GameForm = () => {
                     />
                 </FormGroup>
                 {
-                    presentGame?.tagArray?.length > 0
-                        ? <Alert color="success" style={{ fontSize: 15 }} className="p-2 border rounded-0">The user who recommended this used the tags: {presentGame.tagArray.join(", ")}</Alert>
+                    tagRecoString !== ""
+                        ? <Alert color="success" style={{ fontSize: 15 }} className="p-2 border rounded-0">The user who recommended this used the tags: {tagRecoString}</Alert>
                         : ""
                 }
                 <FormGroup>

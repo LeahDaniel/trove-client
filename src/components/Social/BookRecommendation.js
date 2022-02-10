@@ -1,21 +1,12 @@
-import React, { useEffect, useState } from "react"
-import { Button, Card, CardBody, CardSubtitle, CardText, CardTitle } from "reactstrap"
-import { BookRepo } from "../../repositories/BookRepo"
-import deleteIcon from '../../images/DeleteIcon.png';
+import React from "react"
 import { useHistory } from "react-router";
+import { Button, Card, CardBody, CardSubtitle, CardText, CardTitle } from "reactstrap"
+import deleteIcon from '../../images/DeleteIcon.png';
 import { SocialRepo } from "../../repositories/SocialRepo";
 
 
 export const BookRecommendation = ({ bookRecommendation, setBookRecommendations }) => {
     const history = useHistory()
-    const [book, setBook] = useState([])
-
-    useEffect(
-        () => {
-            BookRepo.get(bookRecommendation.book.id)
-                .then(setBook)
-        }, [bookRecommendation]
-    )
 
     //delete recommendation by id. If a current book, set books with current books, else set books with queued books (to update state appropriately based on current user view)
     const deleteRecommendation = (id) => {
@@ -43,7 +34,7 @@ export const BookRecommendation = ({ bookRecommendation, setBookRecommendations 
                 <CardBody className="mt-0 pt-0">
                     <CardTitle tag="h4" className="mb-3 mt-0">
                         {/* display recommendation names */}
-                        {book.name}
+                        {bookRecommendation.book.name}
                     </CardTitle>
                     <CardSubtitle className="mb-3 mt-0">
                         {/* display sender name */}
@@ -55,7 +46,7 @@ export const BookRecommendation = ({ bookRecommendation, setBookRecommendations 
                     </CardText>
 
                     <Button color="info" onClick={() => {
-                        history.push(`/books/${book.id}/edit`)
+                        history.push(`/books/${bookRecommendation.book.id}/edit`)
                     }}> Add to Queue </Button>
 
                 </CardBody>

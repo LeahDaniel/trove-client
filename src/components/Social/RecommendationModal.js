@@ -2,7 +2,9 @@ import React, { useState } from "react"
 import { Modal, ModalBody, ModalFooter, Button, FormGroup, Input, Label, Alert } from "reactstrap"
 import { SocialRepo } from "../../repositories/SocialRepo"
 
-export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, book, setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
+export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, book, 
+                            setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
+
     const [usernameEntry, setUsernameEntry] = useState("")
     const [messageEntry, setMessageEntry] = useState("")
     const [warningBoolean, setWarningBoolean] = useState(false)
@@ -12,7 +14,7 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, b
 
         SocialRepo.getUserByUsername(usernameEntry)
             .then(foundUser => {
-                if(foundUser.message){
+                if (foundUser.message) {
                     setWarningBoolean(true)
                 } else if (game) {
                     SocialRepo.addGameRecommendation({
@@ -41,7 +43,7 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, b
                         .then(() => setBookRecoSuccess(true))
                         .then(() => setOpenBoolean(false))
                         .then(() => setWarningBoolean(false))
-                } 
+                }
 
             })
 

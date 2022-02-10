@@ -1,21 +1,12 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { Button, Card, CardBody, CardSubtitle, CardText, CardTitle } from "reactstrap"
 import deleteIcon from '../../images/DeleteIcon.png';
 import { useHistory } from "react-router";
 import { SocialRepo } from "../../repositories/SocialRepo";
-import { ShowRepo } from "../../repositories/ShowRepo";
 
 
 export const ShowRecommendation = ({ showRecommendation, setShowRecommendations }) => {
     const history = useHistory()
-    const [show, setShow] = useState([])
-
-    useEffect(
-        () => {
-            ShowRepo.get(showRecommendation.show.id)
-                .then(setShow)
-        }, [showRecommendation]
-    )
 
     //delete recommendation by id. If a current show, set shows with current shows, else set shows with queued shows (to update state appropriately based on current user view)
     const deleteRecommendation = (id) => {
@@ -43,7 +34,7 @@ export const ShowRecommendation = ({ showRecommendation, setShowRecommendations 
                 <CardBody className="mt-0 pt-0">
                     <CardTitle tag="h4" className="mb-3 mt-0">
                         {/* display recommendation names */}
-                        {show.name}
+                        {showRecommendation.show.name}
                     </CardTitle>
                     <CardSubtitle className="mb-3 mt-0">
                         {/* display sender name */}
@@ -55,7 +46,7 @@ export const ShowRecommendation = ({ showRecommendation, setShowRecommendations 
                     </CardText>
 
                     <Button color="info" onClick={() => {
-                        history.push(`/shows/${show.id}/edit`)
+                        history.push(`/shows/${showRecommendation.show.id}/edit`)
                     }}> Add to Queue </Button>
 
                 </CardBody>

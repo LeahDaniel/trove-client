@@ -37,6 +37,10 @@ export const BookRepo = {
         return await fetchIt(`http://localhost:8000/authors`)
     },
 
+    async getAuthorsByName(nameString) {
+        return await fetchIt(`http://localhost:8000/authors?name=${nameString}`)
+    },
+
 
     //DELETEs
     async delete(id) {
@@ -49,6 +53,13 @@ export const BookRepo = {
             `http://localhost:8000/books`,
             "POST",
             JSON.stringify(newBook)
+        )
+    },
+    async addAuthor(newAuthor) {
+        return await fetchIt(
+            `http://localhost:8000/authors`,
+            "POST",
+            JSON.stringify(newAuthor)
         )
     },
 

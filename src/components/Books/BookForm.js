@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react"
-import { useHistory, useLocation } from "react-router"
-import { Alert, Button, Form, FormGroup, FormText, Input, Label} from "reactstrap"
+import { useHistory, useParams } from "react-router"
+import { Alert, Button, Form, FormGroup, FormText, Input, Label } from "reactstrap"
 import { BookRepo } from "../../repositories/BookRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
+import { SocialRepo } from "../../repositories/SocialRepo"
 
 export const BookForm = () => {
     const history = useHistory()
-    const presentBook = useLocation().state
-    const userId = parseInt(localStorage.getItem("trove_user"))
-    const [authors, setAuthors] = useState([])
+    const { bookId } = useParams()
+    const [presentBook, setPresentBook] = useState(null)
     const [tags, setTags] = useState([])
     const [firstAttempt, setFirstAttempt] = useState(true)
     const [alert, setAlert] = useState(false)
@@ -28,37 +28,43 @@ export const BookForm = () => {
     useEffect(
         () => {
             //on page load, GET streaming services and tags
-            TagRepo.getTagsForUser(userId).then(setTags)
-                .then(() => BookRepo.getAuthorsForUser(userId))
-                .then(setAuthors)
-                .then(() => {
-                    if (presentBook) {
-                        //on presentBook state change (when user clicks edit to be brought to form)
-                        //setUserChoices from the values of the presentBook object
-
-                        //change name, current, and multiplayer values based on presentBook values
-                        const obj = {
-                            name: presentBook.name,
-                            current: presentBook.current,
-                            author: presentBook.author.name,
-                            tagArray: []
-                        }
-
-                        //create a tag array from the presentBook's associated taggedBooks, and set as userChoices.tagArray value
-                        if (presentBook.taggedBooks) {
-                            let tagArray = []
-                            for (const taggedBook of presentBook.taggedBooks) {
-                                tagArray.push({ label: taggedBook.tag.tag, value: taggedBook.tag.id })
-                            }
-                            obj.tagArray = tagArray
-                        }
-
-                        //set user choices using the copy constructed above
-                        setUserChoices(obj)
-                    }
-                })
-        }, [userId, presentBook]
+            TagRepo.getAll().then(setTags)
+        }, []
     )
+
+    useEffect(() => {
+        if (bookId) {
+            SocialRepo.getCurrentUser()
+                .then(currentUser => {
+                    BookRepo.get(parseInt(bookId))
+                        .then(book => {
+                            if (book.tags) {
+                                //change name, current, and multiplayer values based on presentBook values
+                                const obj = {
+                                    name: book.name,
+                                    current: book.current,
+                                    author: book.author.name,
+                                    tagArray: []
+                                }
+
+                                //create a tag array from the book's associated taggedBooks, and set as userChoices.tagArray value
+                                let tagArray = []
+                                for (const tag of book.tags) {
+                                    tagArray.push({ label: tag.tag, value: tag.id })
+                                }
+                                obj.tagArray = tagArray
+
+                                //set user choices using the obj constructed above
+                                setUserChoices(obj)
+                            }
+
+                            if (currentUser.id === book.user.id) {
+                                setPresentBook(book)
+                            }
+                        })
+                })
+        }
+    }, [bookId])
 
     useEffect(
         () => {
@@ -85,129 +91,65 @@ export const BookForm = () => {
             }
 
             setInvalid(obj)
-            window.history.replaceState(null, '')
         }, [userChoices]
     )
 
-    //Deletes present taggedBooks and bookPlatforms for presentBook being edited. 
-    // Then, PUT operation to books based on userChoices.
-    //Then, POST operations to tags, taggedBooks, and bookPlatforms using the 
-    //constructTags and constructBookPlatforms functions, with the edited book's id as an argument
-    //Then, push user to current or queued based on if current on book is true or false
-    const editBook = (newAuthorId) => {
-        const bookFromUserChoices = {
-            name: userChoices.name,
-            userId: userId,
-            current: userChoices.current,
-            authorId: newAuthorId
-        }
 
-        TagRepo.deleteTaggedBooksForOneBook(presentBook)
-            .then(() => BookRepo.modifyBook(bookFromUserChoices, presentBook.id))
-            .then((addedBook) => {
-                constructTags(addedBook)
-            })
-            .then(() => {
-                if (userChoices.current === true) {
-                    history.push("/books/current")
-                } else {
-                    history.push("/books/queue")
-                }
-            })
-    }
+    const submitBook = (authorId) => {
+        let tagIdArray = []
+        let promiseArray = []
 
-    //POST operation to books
-    //Then, POST operations to tags, taggedBooks, and bookPlatforms using the 
-    //constructTags and constructBookPlatforms functions, with the posted book's id as an argument
-    //Then, push user to current or queued based on if current on book is true or false
-    const constructBook = (newAuthorId) => {
-        const bookFromUserChoices = {
-            name: userChoices.name,
-            userId: userId,
-            current: userChoices.current,
-            authorId: newAuthorId
-        }
-
-        BookRepo.addBook(bookFromUserChoices)
-            .then((addedBook) => {
-                if (userChoices.tagArray) {
-                    constructTags(addedBook)
-                }
-            })
-            .then(() => {
-                if (userChoices.current === true) {
-                    history.push("/books/current")
-                } else {
-                    history.push("/books/queue")
-                }
-            })
-    }
-
-
-    //uses the tagArray to POST to tags (if it does not yet exist), and to POST taggedBooks objects.
-    //tags will be evaluated as the same even if capitalization and spaces are different.
-    const constructTags = (addedBook) => {
         for (const enteredTag of userChoices.tagArray) {
             if (enteredTag.__isNew__) {
                 //post a new tag object with that enteredTag
-                TagRepo.addTag({ tag: enteredTag.value, userId: userId })
-                    .then((newTag) => {
-                        TagRepo.addTaggedBook({
-                            tagId: newTag.id,
-                            bookId: addedBook.id
+                promiseArray.push(
+                    TagRepo.addTag({ tag: enteredTag.value })
+                        .then((res) => tagIdArray.push(res.id))
+                )
+            } else {
+                tagIdArray.push(enteredTag.value)
+            }
+        }
+
+        const bookFromUserChoices = {
+            name: userChoices.name,
+            current: userChoices.current,
+            author: authorId,
+            tags: tagIdArray,
+        }
+
+        Promise.all(promiseArray)
+            .then(() => {
+                if (presentBook) {
+                    BookRepo.modifyBook(bookFromUserChoices, presentBook.id)
+                } else {
+                    BookRepo.addBook(bookFromUserChoices)
+                }
+            })
+            .then(() => {
+                if (userChoices.current === true) {
+                    history.push("/books/current")
+                } else {
+                    history.push("/books/queue")
+                }
+            })
+    }
+
+    const constructAuthor = () => {
+        BookRepo.getAuthorsByName(userChoices.author)
+            .then(authors => {
+                if (authors[0]) {
+                    //set the state of the authorId using the id of the existing author object
+                    submitBook(authors[0].id)
+                } else {
+                    //post a new author object with the entered author name
+                    BookRepo.addAuthor({ name: userChoices.author })
+                        .then((newAuthor) => {
+                            submitBook(newAuthor.id)
                         })
-                    })
-                //post a new taggedBook object with the tag object made above
-            } else {
-                //post a new taggedBook object with that tag
-                TagRepo.addTaggedBook({
-                    tagId: parseInt(enteredTag.value),
-                    bookId: addedBook.id
-                })
-
-            }
-        }
+                }
+            })
     }
-
-    const constructAuthor = (evt) => {
-        evt.preventDefault()
-
-        const neutralizedAuthorsCopy = authors.map(author => {
-            const upperCased = author.name.toUpperCase()
-            const noSpaces = upperCased.split(" ").join("")
-            return {
-                id: author.id,
-                userId: author.userId,
-                name: noSpaces
-            }
-        })
-
-        const neutralizedEnteredAuthor = userChoices.author.toUpperCase().split(" ").join("")
-
-        let foundAuthor = neutralizedAuthorsCopy.find(author => author.name === neutralizedEnteredAuthor)
-
-        if (foundAuthor) {
-            //set the state of the authorId using the id of the existing author object
-            if (presentBook?.userId) {
-                editBook(foundAuthor.id)
-            } else {
-                constructBook(foundAuthor.id)
-            }
-
-        } else {
-            //post a new author object with the entered author name
-            BookRepo.addAuthor({ name: userChoices.author, userId: userId })
-                .then((newAuthor) => {
-                    if (presentBook?.userId) {
-                        editBook(newAuthor.id)
-                    } else {
-                        constructBook(newAuthor.id)
-                    }
-                })
-
-        }
-    }
-
 
 
     return (
@@ -323,16 +265,24 @@ export const BookForm = () => {
                     </FormText>
                 </FormGroup>
                 {
-                    alert
+                    alert && presentBook
                         ?
                         <div>
                             <Alert
                                 color="danger"
                             >
-                                Please complete all required (!) fields.
+                                Please complete all required (!) fields. If you have no edits, click "Cancel".
                             </Alert>
                         </div>
-                        : ""
+                        : alert && !presentBook
+                            ? <div>
+                                <Alert
+                                    color="danger"
+                                >
+                                    Please complete all required (!) fields before submitting.
+                                </Alert>
+                            </div>
+                            : ""
                 }
                 <FormGroup>
                     <Button color="info" onClick={(evt) => {
@@ -341,7 +291,7 @@ export const BookForm = () => {
                         setFirstAttempt(false)
 
                         if (Object.keys(invalid).every(key => invalid[key] === false)) {
-                            constructAuthor(evt)
+                            constructAuthor()
                         } else {
                             setAlert(true)
                         }

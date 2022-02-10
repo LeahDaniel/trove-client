@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Badge, Card, CardBody, CardText, CardTitle, UncontrolledAlert } from "reactstrap"
 import { ShowRepo } from "../../repositories/ShowRepo"
 import deleteIcon from '../../images/DeleteIcon.png';

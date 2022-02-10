@@ -5,7 +5,6 @@ import { ShowRepo } from "../../repositories/ShowRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 import CreatableSelect from 'react-select/creatable'
 import { SocialRepo } from "../../repositories/SocialRepo"
-import { GameRepo } from "../../repositories/GameRepo"
 
 export const ShowForm = () => {
     const history = useHistory()
@@ -42,7 +41,7 @@ export const ShowForm = () => {
                 .then(currentUser => {
                     ShowRepo.get(parseInt(showId))
                         .then(show => {
-                            if (show.tags && show.platform) {
+                            if (show.tags) {
                                 //change name, current, and multiplayer values based on presentShow values
                                 const obj = {
                                     name: show.name,
@@ -95,6 +94,7 @@ export const ShowForm = () => {
             setInvalid(obj)
         }, [userChoices]
     )
+
     const submitShow = () => {
         let tagIdArray = []
         let promiseArray = []
