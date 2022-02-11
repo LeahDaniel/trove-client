@@ -23,15 +23,6 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
         setUserEntries(copy)
     }
 
-    const multiplayerValue = () => {
-        if (userEntries.multiplayer === true) {
-            return "1"
-        } else if (userEntries.multiplayer===false) {
-            return "2"
-        } else {
-            return "0"
-        }
-    }
 
     return (
         <Form className="pb-2 mt-5 px-2 bg-secondary shadow-sm rounded text-white" inline>
@@ -83,23 +74,16 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
                     id="multiplayerSelect"
                     name="select"
                     type="select"
-                    value={multiplayerValue()}
+                    value={userEntries.multiplayer}
                     onChange={(event) => {
                         const copy = { ...userEntries }
-
-                        if (event.target.value === "1") {
-                            copy.multiplayer = true
-                        } else if (event.target.value === "2") {
-                            copy.multiplayer = false
-                        } else {
-                            copy.multiplayer = null
-                        }
+                        copy.multiplayer = event.target.value
                         setUserEntries(copy)
                     }}
                 >
-                    <option value="0"> Select one... </option>
-                    <option value="1"> Yes </option>
-                    <option value="2"> No </option>
+                    <option value=""> Select one... </option>
+                    <option value="True"> Yes </option>
+                    <option value="False"> No </option>
 
                 </Input>
             </FormGroup>

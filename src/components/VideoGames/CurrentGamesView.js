@@ -21,98 +21,34 @@ export const CurrentGamesView = () => {
     useEffect(
         () => {
             //variables for whether or not the user has filled in each filter
-            const multiplayerExist = userEntries.multiplayer !== null
-            const noMultiplayer = userEntries.multiplayer === null
+            const multiplayerExist = userEntries.multiplayer !== ""
             const platformExist = userEntries.platform !== "0"
-            const noPlatform = userEntries.platform === "0"
             const tagsExist = userEntries.tags.size > 0
-            const noTags = userEntries.tags.size === 0
             const nameExist = userEntries.name !== ""
-            const noName = userEntries.name === ""
 
-            const determineFilters = (midFilterGames) => {
-                const multiplayerBoolean = userEntries.multiplayer
-                const platformId = parseInt(userEntries.platform)
-
-                const gamesByTagOnly = () => {
-                    let newGameArray = []
-
-                    for (const game of midFilterGames) {
-                        let booleanArray = []
-                        userEntries.tags.forEach(tagId => {
-                            const foundGame = game.tags.find(tag => tag.id === tagId)
-                            if (foundGame) {
-                                booleanArray.push(true)
-                            } else {
-                                booleanArray.push(false)
-                            }
-                        })
-                        if (booleanArray.every(boolean => boolean === true)) {
-                            newGameArray.push(game)
-                        }
-                    }
-                    return newGameArray
-                }
-                const gamesByPlatformOnly = midFilterGames.filter(game => {
-                    const foundPlatform = game.platforms.find(platform => platform.id === platformId)
-                    if (foundPlatform) {
-                        return true
-                    } else {
-                        return false
-                    }
-                })
-                const gamesByMultiplayerOnly = midFilterGames.filter(game => game.multiplayer_capable === multiplayerBoolean)
-                const gamesByMultiplayerAndPlatform = gamesByMultiplayerOnly.filter(game => gamesByPlatformOnly.includes(game))
-                const gamesByMultiplayerAndTag = gamesByMultiplayerOnly.filter(game => gamesByTagOnly().includes(game))
-                const gamesByTagAndPlatform = gamesByTagOnly().filter(game => gamesByPlatformOnly.includes(game))
-                const gamesByAllThree = gamesByTagAndPlatform.filter(game => gamesByMultiplayerOnly.includes(game))
-
-
-                if (noMultiplayer) {// all of the below are if the multiplayer filter has not been selected
-                    // if nothing has been chosen, the value of games state remains the same.
-                    if (noPlatform && noTags) {
-                        return midFilterGames
-                    } else if (platformExist && noTags) {
-                        return gamesByPlatformOnly
-                        //if a user has not been chosen and the favorites box is checked
-                    } else if (noPlatform && tagsExist) {
-                        return gamesByTagOnly()
-                        //if a user has been chosen AND the favorites box is checked.
-                    } else if (platformExist && tagsExist) {
-                        return gamesByTagAndPlatform
-                    }
-                } else if (multiplayerExist) { //all of the below account for the multiplayer filter being selected
-                    if (noPlatform && noTags) {
-                        return gamesByMultiplayerOnly
-                    } else if (platformExist && noTags) {
-                        return gamesByMultiplayerAndPlatform
-                        //if a user has not been chosen and the favorites box is checked
-                    } else if (noPlatform && tagsExist) {
-                        return gamesByMultiplayerAndTag
-                        //if a user has been chosen AND the favorites box is checked.
-                    } else if (platformExist && tagsExist) {
-                        return gamesByAllThree
-                    }
-                }
-
-
+            let filters = {
+                current: "True",
+                multiplayer: "",
+                nameSearch: "",
+                platformId: "",
+                tagArray: null
             }
 
-            if (noName) {
-                GameRepo.getAll(true)
-                    .then((result) => setGames(determineFilters(result)))
-                    .then(() => setLoading(false))
-            } else {
-                GameRepo.getBySearchTerm(userEntries.name, true)
-                    .then((result) => setGames(determineFilters(result)))
-                    .then(() => setLoading(false))
-            }
+            if (platformExist) filters.platformId = userEntries.platform
+            if (multiplayerExist) filters.multiplayer = userEntries.multiplayer
+            if (nameExist) filters.nameSearch = userEntries.name
+            if (tagsExist) filters.tagArray = Array.from(userEntries.tags)
 
-            if (nameExist || multiplayerExist || platformExist || tagsExist) {
+            if (nameExist || multiplayerExist || tagsExist || platformExist) {
                 setAttemptBoolean(true)
             } else {
                 setAttemptBoolean(false)
             }
+
+            GameRepo.getAll(filters.current, filters.nameSearch, filters.platformId, filters.multiplayer, filters.tagArray)
+                .then(setGames)
+                .then(() => setLoading(false))
+
         }, [userEntries]
     )
 
