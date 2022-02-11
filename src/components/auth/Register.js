@@ -9,6 +9,7 @@ export const Register = () => {
     const [password, setPassword] = useState("")
     const [password2, setPassword2] = useState("")
     const passwordDialog = useRef()
+    const usernameDialog = useRef()
     const history = useHistory()
 
     const handleRegister = (e) => {
@@ -35,6 +36,8 @@ export const Register = () => {
                     if ("token" in res) {
                         localStorage.setItem("trove_token", res.token)
                         history.push("/")
+                    } else {
+                        usernameDialog.current.showModal()
                     }
                 })
         } else {
@@ -51,6 +54,14 @@ export const Register = () => {
                             <Button close onClick={e => passwordDialog.current.close()} color="info" className="float-end" />
                         </div>
                         <div className="m-4 pb-3">Passwords do not match</div>
+                    </div>
+                </dialog>
+                <dialog className="border-0" ref={usernameDialog}>
+                    <div className="d-flex flex-column">
+                        <div>
+                            <Button close onClick={e => usernameDialog.current.close()} color="info" className="float-end" />
+                        </div>
+                        <div className="m-4 pb-3">Username is not available</div>
                     </div>
                 </dialog>
 
