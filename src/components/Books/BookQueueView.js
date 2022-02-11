@@ -36,7 +36,7 @@ export const BookQueueView = () => {
                     for (const book of midFilterBooks) {
                         let booleanArray = []
                         userEntries.tags.forEach(tagId => {
-                            const foundBook = book.taggedBooks?.find(taggedBook => taggedBook.tagId === tagId)
+                            const foundBook = book.tags.find(tag => tag.id === tagId)
                             if (foundBook) {
                                 booleanArray.push(true)
                             } else {
