@@ -19,60 +19,25 @@ export const BookQueueView = () => {
 
     useEffect(
         () => {
-            //variables for whether or not the user has filled in each filter
-            const authorExist = userEntries.author !== "0"
-            const noAuthor = userEntries.author === "0"
             const nameExist = userEntries.name !== ""
-            const noName = userEntries.name === ""
+            const authorExist = userEntries.author !== "0"
             const tagsExist = userEntries.tags.size > 0
-            const noTags = userEntries.tags.size === 0
 
-            const determineFilters = (midFilterBooks) => {
-                const authorId = parseInt(userEntries.author)
-
-                const booksByTagOnly = () => {
-                    let newBookArray = []
-
-                    for (const book of midFilterBooks) {
-                        let booleanArray = []
-                        userEntries.tags.forEach(tagId => {
-                            const foundBook = book.tags.find(tag => tag.id === tagId)
-                            if (foundBook) {
-                                booleanArray.push(true)
-                            } else {
-                                booleanArray.push(false)
-                            }
-                        })
-                        if (booleanArray.every(boolean => boolean === true)) {
-                            newBookArray.push(book)
-                        }
-                    }
-                    return newBookArray
-                }
-                const booksByAuthorOnly = midFilterBooks.filter(book => book.author.id === authorId)
-                const booksByTagAndAuthor = booksByTagOnly().filter(book => booksByAuthorOnly.includes(book))
-
-                if (noAuthor && noTags) {
-                    return midFilterBooks
-                } else if (authorExist && noTags) {
-                    return booksByAuthorOnly
-                    //if a user has not been chosen and the favorites box is checked
-                } else if (noAuthor && tagsExist) {
-                    return booksByTagOnly()
-                    //if a user has been chosen AND the favorites box is checked.
-                } else if (authorExist && tagsExist) {
-                    return booksByTagAndAuthor
-                }
+            let filters = {
+                current: "False",
+                nameSearch: "",
+                authorId: "",
+                tagArray: null
             }
 
-            if (noName) {
-                BookRepo.getAll(false)
-                    .then((result) => setBooks(determineFilters(result)))
-                    .then(() => setLoading(false))
-            } else {
-                BookRepo.getBySearchTerm(userEntries.name, false)
-                    .then((result) => setBooks(determineFilters(result)))
-                    .then(() => setLoading(false))
+            if(authorExist){
+                filters.authorId = userEntries.author
+            }
+            if(nameExist){
+                filters.nameSearch = userEntries.name
+            }
+            if(tagsExist){
+                filters.tagArray = Array.from(userEntries.tags)
             }
 
             if (nameExist || authorExist || tagsExist) {
@@ -80,6 +45,10 @@ export const BookQueueView = () => {
             } else {
                 setAttemptBoolean(false)
             }
+
+            BookRepo.getAll(filters.current, filters.nameSearch, filters.authorId, filters.tagArray)
+                .then(setBooks)
+                .then(() => setLoading(false))
 
         }, [userEntries]
     )
