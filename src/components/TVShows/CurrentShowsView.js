@@ -32,15 +32,9 @@ export const CurrentShowsView = () => {
                 tagArray: null
             }
 
-            if (serviceExist) {
-                filters.streamingServiceId = userEntries.service
-            }
-            if (nameExist) {
-                filters.nameSearch = userEntries.name
-            }
-            if (tagsExist) {
-                filters.tagArray = Array.from(userEntries.tags)
-            }
+            if (serviceExist) filters.streamingServiceId = userEntries.service
+            if (nameExist) filters.nameSearch = userEntries.name
+            if (tagsExist) filters.tagArray = Array.from(userEntries.tags)
 
             if (nameExist || serviceExist || tagsExist) {
                 setAttemptBoolean(true)

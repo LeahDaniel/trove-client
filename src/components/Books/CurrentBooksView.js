@@ -31,15 +31,9 @@ export const CurrentBooksView = () => {
                 tagArray: null
             }
 
-            if(authorExist){
-                filters.authorId = userEntries.author
-            }
-            if(nameExist){
-                filters.nameSearch = userEntries.name
-            }
-            if(tagsExist){
-                filters.tagArray = Array.from(userEntries.tags)
-            }
+            if(authorExist) filters.authorId = userEntries.author
+            if(nameExist) filters.nameSearch = userEntries.name
+            if(tagsExist) filters.tagArray = Array.from(userEntries.tags)
 
             if (nameExist || authorExist || tagsExist) {
                 setAttemptBoolean(true)
