@@ -12,7 +12,6 @@ export const BookRepo = {
         }
 
         return await fetchIt(`http://localhost:8000/books?search=${nameSearch}&current=${current}&authorId=${authorId}${tagString}`)
-
     },
 
     async get(id) {

@@ -20,70 +20,37 @@ export const CurrentShowsView = () => {
 
     useEffect(
         () => {
-            //variables for whether or not the user has filled in each filter
             const serviceExist = userEntries.service !== "0"
-            const noService = userEntries.service === "0"
             const tagsExist = userEntries.tags.size > 0
-            const noTags = userEntries.tags.size === 0
             const nameExist = userEntries.name !== ""
-            const noName = userEntries.name === ""
 
-            //filters by tag and streaming service
-            const determineFilters = (midFilterShows) => {
-                const serviceId = parseInt(userEntries.service)
 
-                const showsByTagOnly = () => {
-                    let newShowArray = []
-
-                    for (const show of midFilterShows) {
-                        let booleanArray = []
-                        userEntries.tags.forEach(tagId => {
-                            const foundShow = show.tags.find(tag => tag.id === tagId)
-                            if (foundShow) {
-                                booleanArray.push(true)
-                            } else {
-                                booleanArray.push(false)
-                            }
-                        })
-                        if (booleanArray.every(boolean => boolean === true)) {
-                            newShowArray.push(show)
-                        }
-                    }
-                    return newShowArray
-                }
-
-                const showsByServiceOnly = midFilterShows.filter(show => show.streaming_service.id === serviceId)
-                const showsByTagAndService = showsByTagOnly().filter(show => showsByServiceOnly.includes(show))
-
-                if (noService && noTags) {
-                    return midFilterShows
-                } else if (serviceExist && noTags) {
-                    return showsByServiceOnly
-                    //if a user has not been chosen and the favorites box is checked
-                } else if (noService && tagsExist) {
-                    return showsByTagOnly()
-                    //if a user has been chosen AND the favorites box is checked.
-                } else if (serviceExist && tagsExist) {
-                    return showsByTagAndService
-                }
+            let filters = {
+                current: "True",
+                nameSearch: "",
+                streamingServiceId: "",
+                tagArray: null
             }
 
-            if (noName) {
-                ShowRepo.getAll(true)
-                    .then((result) => setShows(determineFilters(result)))
-                    .then(() => setLoading(false))
-            } else {
-                ShowRepo.getBySearchTerm(userEntries.name, true)
-                .then((result) => setShows(determineFilters(result)))
-                .then(() => setLoading(false))
+            if (serviceExist) {
+                filters.streamingServiceId = userEntries.service
             }
-            
+            if (nameExist) {
+                filters.nameSearch = userEntries.name
+            }
+            if (tagsExist) {
+                filters.tagArray = Array.from(userEntries.tags)
+            }
 
             if (nameExist || serviceExist || tagsExist) {
                 setAttemptBoolean(true)
             } else {
                 setAttemptBoolean(false)
             }
+
+            ShowRepo.getAll(filters.current, filters.nameSearch, filters.streamingServiceId, filters.tagArray)
+                .then(setShows)
+                .then(() => setLoading(false))
 
         }, [userEntries]
     )
@@ -103,7 +70,7 @@ export const CurrentShowsView = () => {
                     </Button>
                 </div>
 
-                <SearchShows setUserEntries={setUserEntries} userEntries={userEntries}/>
+                <SearchShows setUserEntries={setUserEntries} userEntries={userEntries} />
             </div>
             {
                 isLoading
