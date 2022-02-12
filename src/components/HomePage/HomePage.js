@@ -82,7 +82,6 @@ export const HomePage = () => {
                                 <SearchResults games={games} books={books} shows={shows} 
                                 userAttemptedSearch={userAttemptedSearch} loadingBooks={loadingBooks} 
                                 loadingGames={loadingGames} loadingShows={loadingShows}/>
-
                             </div>
                         </div>
                     </>

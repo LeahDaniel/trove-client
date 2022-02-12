@@ -23,7 +23,7 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
     }
 
     return (
-        <div className="col-3 text-white">
+        <div className="col-3 text-white sidebar">
             {
                 isLoading
                     ? ""
