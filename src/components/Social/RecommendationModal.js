@@ -2,51 +2,59 @@ import React, { useState } from "react"
 import { Modal, ModalBody, ModalFooter, Button, FormGroup, Input, Label, Alert } from "reactstrap"
 import { SocialRepo } from "../../repositories/SocialRepo"
 
-export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, book, 
-                            setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
+export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, book,
+    setBookRecoSuccess, setGameRecoSuccess, setShowRecoSuccess }) => {
 
     const [usernameEntry, setUsernameEntry] = useState("")
     const [messageEntry, setMessageEntry] = useState("")
     const [warningBoolean, setWarningBoolean] = useState(false)
+    const [sameUserBoolean, setSameUserBoolean] = useState(false)
 
     const submitRecommendation = (evt) => {
         evt.preventDefault()
+        setWarningBoolean(false)
+        setSameUserBoolean(false)
 
         SocialRepo.getUserByUsername(usernameEntry)
             .then(foundUser => {
                 if (foundUser.message) {
                     setWarningBoolean(true)
-                } else if (game) {
-                    SocialRepo.addGameRecommendation({
-                        recipient: foundUser.id,
-                        game: game.id,
-                        message: messageEntry
-                    })
-                        .then(() => setGameRecoSuccess(true))
-                        .then(() => setOpenBoolean(false))
-                        .then(() => setWarningBoolean(false))
-                } else if (show) {
-                    SocialRepo.addShowRecommendation({
-                        recipient: foundUser.id,
-                        show: show.id,
-                        message: messageEntry
-                    })
-                        .then(() => setShowRecoSuccess(true))
-                        .then(() => setOpenBoolean(false))
-                        .then(() => setWarningBoolean(false))
-                } else if (book) {
-                    SocialRepo.addBookRecommendation({
-                        recipient: foundUser.id,
-                        book: book.id,
-                        message: messageEntry
-                    })
-                        .then(() => setBookRecoSuccess(true))
-                        .then(() => setOpenBoolean(false))
-                        .then(() => setWarningBoolean(false))
+                } else {
+                    SocialRepo.getCurrentUser()
+                        .then(currentUser => {
+                            if (currentUser.id === foundUser.id) {
+                                setSameUserBoolean(true)
+                            } else if (game) {
+                                SocialRepo.addGameRecommendation({
+                                    recipient: foundUser.id,
+                                    game: game.id,
+                                    message: messageEntry
+                                })
+                                    .then(() => setGameRecoSuccess(true))
+                                    .then(() => setOpenBoolean(false))
+                                    .then(() => setWarningBoolean(false))
+                            } else if (show) {
+                                SocialRepo.addShowRecommendation({
+                                    recipient: foundUser.id,
+                                    show: show.id,
+                                    message: messageEntry
+                                })
+                                    .then(() => setShowRecoSuccess(true))
+                                    .then(() => setOpenBoolean(false))
+                                    .then(() => setWarningBoolean(false))
+                            } else if (book) {
+                                SocialRepo.addBookRecommendation({
+                                    recipient: foundUser.id,
+                                    book: book.id,
+                                    message: messageEntry
+                                })
+                                    .then(() => setBookRecoSuccess(true))
+                                    .then(() => setOpenBoolean(false))
+                                    .then(() => setWarningBoolean(false))
+                            }
+                        })
                 }
-
             })
-
     }
 
 
@@ -80,6 +88,18 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, b
                         </div>
                         : ""
                 }
+                {
+                    sameUserBoolean
+                        ?
+                        <div>
+                            <Alert
+                                color="danger"
+                            >
+                                You cannot send a recommendation to yourself. Please enter the username of another user or click "Cancel".
+                            </Alert>
+                        </div>
+                        : ""
+                }
                 <FormGroup className="mt-4">
                     <Label>
                         Message
@@ -106,6 +126,7 @@ export const RecommendationModal = ({ openBoolean, setOpenBoolean, game, show, b
                 {/* set boolean state to false when cancel button is clicked to hide modal */}
                 <Button color="info" className="text-white" onClick={() => {
                     setWarningBoolean(false)
+                    setSameUserBoolean(false)
                     setOpenBoolean(false)
                 }}>
                     Cancel
