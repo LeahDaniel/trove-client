@@ -6,11 +6,13 @@ import { TagRepo } from "../../repositories/TagRepo"
 export const SearchShows = ({ userEntries, setUserEntries }) => {
     const [tags, setTags] = useState([])
     const [streamingServices, setStreamingServices] = useState([])
+    const [isLoading, setLoading] = useState(true)
 
     useEffect(
         () => {
             TagRepo.getTagsOnShows().then(setTags)
-            ShowRepo.getAllStreamingServices().then(setStreamingServices)
+                .then(() => ShowRepo.getAllStreamingServices().then(setStreamingServices))
+                .then(() => setLoading(false))
         }, []
     )
 
@@ -24,95 +26,101 @@ export const SearchShows = ({ userEntries, setUserEntries }) => {
     }
 
     return (
-        <Form className="pb-2 mt-5 px-2 bg-secondary shadow-sm rounded text-white" inline>
+        <>
+            {
+                isLoading
+                    ? <div className="pb-2 mt-5 px-2"></div>
+                    : <Form className="pb-2 mt-5 px-2 bg-secondary shadow-sm rounded text-white" inline>
 
-            <h5 className="text-center py-3">Filters</h5>
+                        <h5 className="text-center py-3">Filters</h5>
 
-            <FormGroup>
-                <Label for="nameSearch">
-                    Search by Title
-                </Label>
-                <Input
-                    id="nameSearch"
-                    type="search"
-                    placeholder="Title contains..."
-                    value={userEntries.name}
-                    onChange={(event) => {
-                        const userEntriesCopy = { ...userEntries }
-                        userEntriesCopy.name = event.target.value
-                        setUserEntries(userEntriesCopy)
-                    }}
-                />
-            </FormGroup>
-            <FormGroup>
-                <Label for="platformSelect">
-                    Streaming Service
-                </Label>
-                <Input
-                    id="platformSelect"
-                    name="select"
-                    type="select"
-                    value={userEntries.service}
-                    onChange={(event) => {
-                        const userEntriesCopy = { ...userEntries }
-                        userEntriesCopy.service = event.target.value
-                        setUserEntries(userEntriesCopy)
-                    }}
-                >
-                    <option value="0"> Select one... </option>
-                    {
-                        streamingServices.map(service => {
-                            return <option key={service.id} value={service.id}>{service.service} </option>
-                        })
-                    }
+                        <FormGroup>
+                            <Label for="nameSearch">
+                                Search by Title
+                            </Label>
+                            <Input
+                                id="nameSearch"
+                                type="search"
+                                placeholder="Title contains..."
+                                value={userEntries.name}
+                                onChange={(event) => {
+                                    const userEntriesCopy = { ...userEntries }
+                                    userEntriesCopy.name = event.target.value
+                                    setUserEntries(userEntriesCopy)
+                                }}
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="platformSelect">
+                                Streaming Service
+                            </Label>
+                            <Input
+                                id="platformSelect"
+                                name="select"
+                                type="select"
+                                value={userEntries.service}
+                                onChange={(event) => {
+                                    const userEntriesCopy = { ...userEntries }
+                                    userEntriesCopy.service = event.target.value
+                                    setUserEntries(userEntriesCopy)
+                                }}
+                            >
+                                <option value="0"> Select one... </option>
+                                {
+                                    streamingServices.map(service => {
+                                        return <option key={service.id} value={service.id}>{service.service} </option>
+                                    })
+                                }
 
-                </Input>
-            </FormGroup>
-            <FormGroup>
-                <Label>
-                    Tags
-                </Label>
-                <div>
-                    {
-                        tags.length > 0
-                            ? tags.map(tag => {
-                                return <Button
-                                    key={`tag--${tag.id}`}
-                                    active={userEntries.tags.has(tag.id) ? true : false}
-                                    color="checkbox"
-                                    style={{borderRadius: '20px' }}
-                                    outline
-                                    size="sm"
-                                    className="mx-1 my-2 text-white"
-                                    onClick={() => setTag(tag.id)}
-                                >
-                                    {tag.tag}
-                                </Button>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>
+                                Tags
+                            </Label>
+                            <div>
+                                {
+                                    tags.length > 0
+                                        ? tags.map(tag => {
+                                            return <Button
+                                                key={`tag--${tag.id}`}
+                                                active={userEntries.tags.has(tag.id) ? true : false}
+                                                color="checkbox"
+                                                style={{ borderRadius: '20px' }}
+                                                outline
+                                                size="sm"
+                                                className="mx-1 my-2 text-white"
+                                                onClick={() => setTag(tag.id)}
+                                            >
+                                                {tag.tag}
+                                            </Button>
 
-                            })
-                            : ""
-                    }
-                </div>
-            </FormGroup>
-            <FormGroup className='row justify-content-center'>
-                <Button
-                    onClick={() => {
-                        let userEntriesCopy = { ...userEntries }
-                        userEntriesCopy = {
-                            name: "",
-                            service: "0",
-                            tags: new Set()
-                        }
-                        setUserEntries(userEntriesCopy)
-                    }
-                    }
-                    color="info"
-                    className="col-sm-9 col-md-7 col-lg-5 mt-2"
-                    size="sm"
-                >
-                    Clear Filters
-                </Button>
-            </FormGroup>
-        </Form>
+                                        })
+                                        : ""
+                                }
+                            </div>
+                        </FormGroup>
+                        <FormGroup className='row justify-content-center'>
+                            <Button
+                                onClick={() => {
+                                    let userEntriesCopy = { ...userEntries }
+                                    userEntriesCopy = {
+                                        name: "",
+                                        service: "0",
+                                        tags: new Set()
+                                    }
+                                    setUserEntries(userEntriesCopy)
+                                }
+                                }
+                                color="info"
+                                className="col-sm-9 col-md-7 col-lg-5 mt-2"
+                                size="sm"
+                            >
+                                Clear Filters
+                            </Button>
+                        </FormGroup>
+                    </Form>
+            }
+        </>
     )
 }

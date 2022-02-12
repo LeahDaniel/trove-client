@@ -19,11 +19,11 @@ export const Show = ({ show, setShows }) => {
     const deleteShow = (showId) => {
         if (show.current === true) {
             ShowRepo.delete(showId)
-                .then(() => ShowRepo.getAll(true)
+                .then(() => ShowRepo.getAll("True")
                     .then(setShows))
         } else {
             ShowRepo.delete(showId)
-                .then(() => ShowRepo.getAll(false)
+                .then(() => ShowRepo.getAll("False")
                     .then(setShows))
         }
     }

@@ -45,7 +45,7 @@ export const GameQueueView = () => {
                 setAttemptBoolean(false)
             }
 
-            GameRepo.getAll(filters.current, filters.nameSearch, filters.platformId, filters.multiplayer, filters.tagArray)
+            GameRepo.getAll( filters.current, filters.tagArray, filters.nameSearch,filters.platformId, filters.multiplayer)
                 .then(setGames)
                 .then(() => setLoading(false))
 

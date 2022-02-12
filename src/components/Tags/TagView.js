@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, FormGroup, Input, Label } from 'reactstrap';
+import { Button, FormGroup, Input, Label } from 'reactstrap';
 import { TagRepo } from '../../repositories/TagRepo';
 import { TagList } from './TagList';
 import { TagSearch } from './TagSearch';
@@ -57,41 +57,45 @@ export const TagView = () => {
     }
 
     return (
-
-        <div className="p-5 m-5 border gradient rounded">
-            <div className='row justify-content-center mb-3'>
-                <TagSearch setUserEntry={setUserEntry} userEntry={userEntry} />
-            </div>
+        <>
             {
                 isLoading
-                    ? < Card className="col-7 d-flex align-items-center justify-content-center border-0" />
-                    : <TagList tags={tags} setTags={setTags} userAttemptedSearch={userAttemptedSearch} setUserEntry={setUserEntry} />
-            }
-            <div className='row justify-content-center'>
-                {
-                    openBoolean
-                        ? <FormGroup className="col-5 mt-4">
-                            <Label>New Tag Name</Label>
-                            <Input
-                                id="tagEdit"
-                                type="text"
-                                onKeyUp={(event) => {
-                                    if (event.key === "Enter") {
-                                        constructTag(newTagString)
-                                    } else {
-                                        setNewTagString(event.target.value)
-                                    }
-                                }}
-                            />
-                            <div className='row justify-content-center'>
-                                <Button color="info" className="col-2 mt-4 px-1" onClick={() => constructTag(newTagString)}>Submit</Button>
-                            </div>
-                        </FormGroup>
+                    ? ""
+                    :
+                    <div className="p-5 m-5 border gradient rounded">
+                        <div className='row justify-content-center mb-3'>
+                            <TagSearch setUserEntry={setUserEntry} userEntry={userEntry} />
+                        </div>
 
-                        : <Button color="info" className="col-lg-2 col-md-3 col-sm-4 col-xs-5 mt-4 px-1 " onClick={() => setOpenBoolean(!openBoolean)}>Add A New Tag</Button>
-                }
-            </div>
-        </div>
+                        <TagList tags={tags} setTags={setTags} userAttemptedSearch={userAttemptedSearch} setUserEntry={setUserEntry} />
+
+                        <div className='row justify-content-center'>
+                            {
+                                openBoolean
+                                    ? <FormGroup className="col-5 mt-4">
+                                        <Label>New Tag Name</Label>
+                                        <Input
+                                            id="tagEdit"
+                                            type="text"
+                                            onKeyUp={(event) => {
+                                                if (event.key === "Enter") {
+                                                    constructTag(newTagString)
+                                                } else {
+                                                    setNewTagString(event.target.value)
+                                                }
+                                            }}
+                                        />
+                                        <div className='row justify-content-center'>
+                                            <Button color="info" className="col-2 mt-4 px-1" onClick={() => constructTag(newTagString)}>Submit</Button>
+                                        </div>
+                                    </FormGroup>
+
+                                    : <Button color="info" className="col-lg-2 col-md-3 col-sm-4 col-xs-5 mt-4 px-1 " onClick={() => setOpenBoolean(!openBoolean)}>Add A New Tag</Button>
+                            }
+                        </div>
+                    </div>
+            }
+        </>
 
     )
 }

@@ -21,11 +21,11 @@ export const Game = ({ game, showDetail, setGames }) => {
     const deleteGame = (gameId) => {
         if (game.current === true) {
             GameRepo.delete(gameId)
-                .then(() => GameRepo.getAll(true)
+                .then(() => GameRepo.getAll("True")
                     .then(setGames))
         } else {
             GameRepo.delete(gameId)
-                .then(() => GameRepo.getAll(false)
+                .then(() => GameRepo.getAll("False")
                     .then(setGames))
         }
     }

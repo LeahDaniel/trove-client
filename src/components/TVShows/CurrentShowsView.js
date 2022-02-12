@@ -42,7 +42,7 @@ export const CurrentShowsView = () => {
                 setAttemptBoolean(false)
             }
 
-            ShowRepo.getAll(filters.current, filters.nameSearch, filters.streamingServiceId, filters.tagArray)
+            ShowRepo.getAll(filters.current, filters.tagArray, filters.nameSearch,  filters.streamingServiceId)
                 .then(setShows)
                 .then(() => setLoading(false))
 

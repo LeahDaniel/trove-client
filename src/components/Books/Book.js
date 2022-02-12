@@ -18,11 +18,11 @@ export const Book = ({ book, setBooks }) => {
     const deleteBook = (bookId) => {
         if (book.current === true) {
             BookRepo.delete(bookId)
-                .then(() => BookRepo.getAll(true)
+                .then(() => BookRepo.getAll("True")
                     .then(setBooks))
         } else {
             BookRepo.delete(bookId)
-                .then(() => BookRepo.getAll(false)
+                .then(() => BookRepo.getAll("False")
                     .then(setBooks))
         }
     }

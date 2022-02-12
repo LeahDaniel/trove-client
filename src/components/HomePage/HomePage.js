@@ -10,8 +10,13 @@ export const HomePage = () => {
     const [books, setBooks] = useState([])
     const [shows, setShows] = useState([])
     const [userAttemptedSearch, setAttemptBoolean] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+    const [loadingGames, setLoadingGames] = useState(true)
+    const [loadingShows, setLoadingShows] = useState(true)
+    const [loadingBooks, setLoadingBooks] = useState(true)
     const [userEntries, setUserEntries] = useState({
         title: "",
+        current: "",
         tags: new Set()
     })
 
@@ -20,51 +25,30 @@ export const HomePage = () => {
         () => {
             const tagsExist = userEntries.tags.size > 0
             const titleExists = userEntries.title !== ""
+            const currentExists = userEntries.current !== ""
 
-            //filter games, shows, and books array based on tags they're associate with
-            const tagFiltering = (array) => {
-                if (tagsExist) {
-                    let newArray = []
-
-                    for (const item of array) {
-                        let booleanArray = []
-                        userEntries.tags.forEach(tagId => {
-                            const foundItem = item.tags.find(tag => tag.id === tagId)
-                            if (foundItem) {
-                                booleanArray.push(true)
-                            } else {
-                                booleanArray.push(false)
-                            }
-                        })
-
-                        if (booleanArray.every(boolean => boolean === true)) {
-                            newArray.push(item)
-                        }
-                    }
-                    return newArray
-
-                } else {
-                    return array
-                }
+            let filters = {
+                title: "",
+                current: "",
+                tagArray: null
             }
 
-            //determine whether to search JSON by name (whether user has entered search term), then determine tag filters with functions above
-            if (titleExists) {
-                GameRepo.getBySearchTerm(userEntries.title)
-                    .then((result) => setGames(tagFiltering(result)))
-                ShowRepo.getBySearchTerm(userEntries.title)
-                    .then((result) => setShows(tagFiltering(result)))
-                BookRepo.getBySearchTerm(userEntries.title)
-                    .then((result) => setBooks(tagFiltering(result)))
+            if (titleExists) filters.title = userEntries.title
+            if (currentExists) filters.current = userEntries.current
+            if (tagsExist) filters.tagArray = Array.from(userEntries.tags)
 
-            } else {
-                GameRepo.getAll()
-                    .then((result) => setGames(tagFiltering(result)))
-                ShowRepo.getAll()
-                    .then((result) => setShows(tagFiltering(result)))
-                BookRepo.getAll()
-                    .then((result) => setBooks(tagFiltering(result)))
-            }
+            let promiseArray = []
+
+            promiseArray.push(
+                GameRepo.getAll(filters.current, filters.tagArray, filters.title).then(setGames).then(() => setLoadingGames(false)))
+            promiseArray.push(
+                ShowRepo.getAll(filters.current, filters.tagArray, filters.title).then(setShows).then(() => setLoadingShows(false)))
+            promiseArray.push(
+                BookRepo.getAll(filters.current, filters.tagArray, filters.title).then(setBooks).then(() => setLoadingBooks(false)))
+
+
+            Promise.all(promiseArray)
+                .then(() => setIsLoading(false))
 
             //mark whether a user has used the filters in order to determine the message they get for a blank list
             if (titleExists || tagsExist) {
@@ -78,22 +62,31 @@ export const HomePage = () => {
 
     return (
         <>
-            <div className="p-5 m-5 gradient border-0 shadow-sm" style={{ borderRadius: 25 }}>
-                <p>Welcome! Please use the navigation bar above to find the list of media you'd like to look through, or use the filter feature below to search through all of your media at once.</p>
-                <p className="pt-3">Each media type has a:</p>
-                <ul>
-                    <li>Current List (for media you are currently watching/playing/etc)</li>
-                    <li>Queue (for media you've been recommended or want to watch/play/etc in the future)</li>
-                    <li>Option to add a new entry</li>
-                </ul>
-            </div>
-            <div>
-                {/* <div className="row justify-content-center mt-4"><h2 className='col-6 text-center'>Your Media</h2></div> */}
-                <div className="row justify-content-evenly">
-                    <FilterForm userEntries={userEntries} setUserEntries={setUserEntries} />
-                    <SearchResults games={games} shows={shows} books={books} userAttemptedSearch={userAttemptedSearch} />
-                </div>
-            </div>
+            {
+                isLoading
+                    ? ""
+                    : <>
+                        <div className="p-5 m-5 gradient border-0 shadow-sm" style={{ borderRadius: 25 }}>
+                            <p>Welcome! Please use the navigation bar above to find the list of media you'd like to look through, or use the filter feature below to search through all of your media at once.</p>
+                            <p className="pt-3">Each media type has a:</p>
+                            <ul>
+                                <li>Current List (for media you are currently watching/playing/etc)</li>
+                                <li>Queue (for media you've been recommended or want to watch/play/etc in the future)</li>
+                                <li>Option to add a new entry</li>
+                            </ul>
+                        </div>
+                        <div>
+                            {/* <div className="row justify-content-center mt-4"><h2 className='col-6 text-center'>Your Media</h2></div> */}
+                            <div className="row justify-content-evenly">
+                                <FilterForm userEntries={userEntries} setUserEntries={setUserEntries} />
+                                <SearchResults games={games} books={books} shows={shows} 
+                                userAttemptedSearch={userAttemptedSearch} loadingBooks={loadingBooks} 
+                                loadingGames={loadingGames} loadingShows={loadingShows}/>
+
+                            </div>
+                        </div>
+                    </>
+            }
         </>
     )
 
