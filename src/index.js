@@ -7,10 +7,8 @@ import './scss/custom.scss'
 import "./index.css"
 
 ReactDOM.render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <Trove />
-        </BrowserRouter>
-    </React.StrictMode>,
+    <BrowserRouter>
+        <Trove />
+    </BrowserRouter>,
     document.getElementById("root")
 )

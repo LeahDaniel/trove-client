@@ -22,7 +22,7 @@ export const RecommendationList = ({ setNewNotification }) => {
                     setLoading(false)
                     setNewNotification(false)
                 })
-        }, []
+        }, [setNewNotification]
     )
 
     return (
