@@ -46,6 +46,19 @@ export const TagRepo = {
         )
     },
 
+    async seedTags(token) {
+        return fetch("http://localhost:8000/tags/seed", {
+        method: "POST",
+        headers: {
+            "Authorization": `Token ${token}`,
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+    },
+
+
+
 
     //PUT
     async editTag(tagObj, tagId) {

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react"
 import { Link, useHistory } from "react-router-dom"
 import { Button, Form, FormGroup, Input, Label } from "reactstrap"
+import { TagRepo } from "../../repositories/TagRepo"
 
 export const Register = () => {
     const [firstName, setFirstName] = useState("")
@@ -35,6 +36,7 @@ export const Register = () => {
                 .then(res => {
                     if ("token" in res) {
                         localStorage.setItem("trove_token", res.token)
+                        TagRepo.seedTags(res.token)
                         history.push("/")
                     } else {
                         usernameDialog.current.showModal()
