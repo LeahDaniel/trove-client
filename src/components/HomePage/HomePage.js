@@ -11,9 +11,12 @@ export const HomePage = () => {
     const [shows, setShows] = useState([])
     const [userAttemptedSearch, setAttemptBoolean] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const [loadingList, setLoadingList] = useState(false)
+    const [loadingGames, setLoadingGames] = useState(true)
+    const [loadingShows, setLoadingShows] = useState(true)
+    const [loadingBooks, setLoadingBooks] = useState(true)
     const [userEntries, setUserEntries] = useState({
         title: "",
+        current: "",
         tags: new Set()
     })
 
@@ -22,6 +25,7 @@ export const HomePage = () => {
         () => {
             const tagsExist = userEntries.tags.size > 0
             const titleExists = userEntries.title !== ""
+            const currentExists = userEntries.current !== ""
 
             let filters = {
                 title: "",
@@ -29,28 +33,29 @@ export const HomePage = () => {
                 tagArray: null
             }
 
-            if (titleExists) filters.titleSearch = userEntries.title
+            if (titleExists) filters.title = userEntries.title
+            if (currentExists) filters.current = userEntries.current
             if (tagsExist) filters.tagArray = Array.from(userEntries.tags)
 
             let promiseArray = []
 
-            promiseArray.push(GameRepo.getAll(filters.tagArray, filters.titleSearch, filters.current).then(setGames))
-            promiseArray.push(ShowRepo.getAll(filters.tagArray, filters.titleSearch, filters.current).then(setShows))
-            promiseArray.push(BookRepo.getAll(filters.tagArray, filters.titleSearch, filters.current).then(setBooks))
+            promiseArray.push(
+                GameRepo.getAll(filters.current, filters.tagArray, filters.title).then(setGames).then(() => setLoadingGames(false)))
+            promiseArray.push(
+                ShowRepo.getAll(filters.current, filters.tagArray, filters.title).then(setShows).then(() => setLoadingShows(false)))
+            promiseArray.push(
+                BookRepo.getAll(filters.current, filters.tagArray, filters.title).then(setBooks).then(() => setLoadingBooks(false)))
 
-            // setLoadingList(true)
 
             Promise.all(promiseArray)
                 .then(() => setIsLoading(false))
-                // .then(() => setLoadingList(false))
-                
+
             //mark whether a user has used the filters in order to determine the message they get for a blank list
             if (titleExists || tagsExist) {
                 setAttemptBoolean(true)
             } else {
                 setAttemptBoolean(false)
             }
-
 
         }, [userEntries]
     )
@@ -74,12 +79,10 @@ export const HomePage = () => {
                             {/* <div className="row justify-content-center mt-4"><h2 className='col-6 text-center'>Your Media</h2></div> */}
                             <div className="row justify-content-evenly">
                                 <FilterForm userEntries={userEntries} setUserEntries={setUserEntries} />
-                                {
-                                    loadingList
-                                        ? <div className="col-7"></div>
-                                        : <SearchResults games={games} books={books} 
-                                            shows={shows} userAttemptedSearch={userAttemptedSearch} />
-                                }
+                                <SearchResults games={games} books={books} shows={shows} 
+                                userAttemptedSearch={userAttemptedSearch} loadingBooks={loadingBooks} 
+                                loadingGames={loadingGames} loadingShows={loadingShows}/>
+
                             </div>
                         </div>
                     </>

@@ -41,8 +41,7 @@ export const CurrentBooksView = () => {
                 setAttemptBoolean(false)
             }
 
-            setLoading(true)
-            BookRepo.getAll(filters.tagArray, filters.nameSearch, filters.current, filters.authorId)
+            BookRepo.getAll(filters.current, filters.tagArray, filters.nameSearch, filters.authorId)
                 .then(setBooks)
                 .then(() => setLoading(false))
 

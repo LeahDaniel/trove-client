@@ -42,8 +42,7 @@ export const ShowQueueView = () => {
                 setAttemptBoolean(false)
             }
 
-            setLoading(true)
-            ShowRepo.getAll(filters.tagArray, filters.nameSearch, filters.current, filters.streamingServiceId)
+            ShowRepo.getAll(filters.current, filters.tagArray, filters.nameSearch, filters.streamingServiceId)
                 .then(setShows)
                 .then(() => setLoading(false))
 

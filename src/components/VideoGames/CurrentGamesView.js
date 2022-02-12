@@ -45,8 +45,7 @@ export const CurrentGamesView = () => {
                 setAttemptBoolean(false)
             }
 
-            setLoading(true)
-            GameRepo.getAll(filters.tagArray, filters.nameSearch, filters.current, filters.platformId, filters.multiplayer)
+            GameRepo.getAll( filters.current, filters.tagArray, filters.nameSearch, filters.platformId, filters.multiplayer)
                 .then(setGames)
                 .then(() => setLoading(false))
 

@@ -3,7 +3,7 @@ import { fetchIt } from "./FetchIt"
 //Object (ShowRepo) with methods (functions) added onto it, making each function accessible via dot notation.
 export const ShowRepo = {
     //GETs
-    async getAll(tags, nameSearch = "", current="", streamingServiceId = "") {
+    async getAll(current="", tags, nameSearch = "",  streamingServiceId = "") {
         let tagString = ""
         if (tags) {
             for (const tagId of tags) {

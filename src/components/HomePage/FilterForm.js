@@ -48,6 +48,27 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
                             />
                         </FormGroup>
                         <FormGroup>
+                            <Label for="currentSelect">
+                                Current or Queued?
+                            </Label>
+                            <Input
+                                id="currentSelect"
+                                name="select"
+                                type="select"
+                                value={userEntries.current}
+                                onChange={(event) => {
+                                    const copy = { ...userEntries }
+                                    copy.current = event.target.value
+                                    setUserEntries(copy)
+                                }}
+                            >
+                                <option value=""> Select one... </option>
+                                <option value="True"> Current </option>
+                                <option value="False"> Queued </option>
+
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
                             <Label>
                                 Tags
                             </Label>
@@ -77,7 +98,8 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
                                 onClick={() => {
                                     const reset = {
                                         title: "",
-                                        tags: new Set()
+                                        tags: new Set(),
+                                        current: ""
                                     }
                                     setUserEntries(reset)
                                 }

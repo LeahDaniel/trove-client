@@ -3,7 +3,7 @@ import { fetchIt } from "./FetchIt"
 //Object (GameRepo) with methods (functions) added onto it, making each function accessible via dot notation.
 export const GameRepo = {
     //GETs
-    async getAll(tags, nameSearch = "", current = "", platformId = "", multiplayer= "") {
+    async getAll(current = "", tags, nameSearch = "",  platformId = "", multiplayer= "") {
         let tagString = ""
         if (tags) {
             for (const tagId of tags) {
