@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import { Button, Form, FormGroup, Input, Label } from "reactstrap"
+import { Button, Form, FormGroup, Input, Label, UncontrolledAlert } from "reactstrap"
 
 
 export const Login = () => {
@@ -37,6 +37,15 @@ export const Login = () => {
 
     return (
         <main className="row justify-content-center my-5">
+            <UncontrolledAlert
+                    className="shadow-sm text-black p-4 col-9 "
+                    color="danger">
+                        <p>Thank you for demoing my site! To start with pre-made user data, use the following login:</p>
+                        <p>Username: mitch</p>
+                        <p>Password: me</p>
+                        <p>You may also register a new account, but please use a fake password, such as "password"</p>
+                </UncontrolledAlert>
+
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
                 <dialog className="border-0" ref={invalidDialog}>
                     <div className="d-flex flex-column">
