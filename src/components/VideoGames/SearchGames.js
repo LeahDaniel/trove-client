@@ -119,7 +119,7 @@ export const SearchGames = ({ userEntries, setUserEntries, taggedGames }) => {
                         let userEntriesCopy = { ...userEntries }
                         userEntriesCopy = {
                             name: "",
-                            multiplayer: null,
+                            multiplayer: "",
                             platform: "0",
                             tags: new Set()
                         }

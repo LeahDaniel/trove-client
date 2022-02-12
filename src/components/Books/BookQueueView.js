@@ -41,7 +41,8 @@ export const BookQueueView = () => {
                 setAttemptBoolean(false)
             }
 
-            BookRepo.getAll(filters.current, filters.nameSearch, filters.authorId, filters.tagArray)
+            setLoading(true)
+            BookRepo.getAll(filters.tagArray, filters.nameSearch, filters.current, filters.authorId)
                 .then(setBooks)
                 .then(() => setLoading(false))
 

@@ -13,7 +13,7 @@ export const CurrentGamesView = () => {
     const [userAttemptedSearch, setAttemptBoolean] = useState(false)
     const [userEntries, setUserEntries] = useState({
         name: "",
-        multiplayer: null,
+        multiplayer: "",
         platform: "0",
         tags: new Set()
     })
@@ -45,7 +45,8 @@ export const CurrentGamesView = () => {
                 setAttemptBoolean(false)
             }
 
-            GameRepo.getAll(filters.current, filters.nameSearch, filters.platformId, filters.multiplayer, filters.tagArray)
+            setLoading(true)
+            GameRepo.getAll(filters.tagArray, filters.nameSearch, filters.current, filters.platformId, filters.multiplayer)
                 .then(setGames)
                 .then(() => setLoading(false))
 
