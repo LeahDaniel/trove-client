@@ -12,7 +12,7 @@ export const Login = () => {
     const handleLogin = (e) => {
         e.preventDefault()
 
-        return fetch("http://127.0.0.1:8000/login", {
+        return fetch("https://trove-server.herokuapp.com/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -40,10 +40,9 @@ export const Login = () => {
             <UncontrolledAlert
                     className="shadow-sm text-black p-4 col-9 "
                     color="danger">
-                        <p>Thank you for demoing my site! To start with pre-made user data, use the following login:</p>
+                        <p>Thank you for demoing my site! To start with pre-made user data, use the following login. Or, register a new account.</p>
                         <p>Username: mitch</p>
-                        <p>Password: me</p>
-                        <p>You may also register a new account, but please use a fake password, such as "password"</p>
+                        <p>Password: trovedemo</p>
                 </UncontrolledAlert>
 
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
