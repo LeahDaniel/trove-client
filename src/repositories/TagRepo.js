@@ -3,26 +3,26 @@ import { fetchIt } from "./FetchIt"
 export const TagRepo = {
     //GETs
     async getAll() {
-        return await fetchIt(`http://localhost:8000/tags`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags`)
     },
     async getTagsBySearchTerm(searchTerm) {
-        return await fetchIt(`http://localhost:8000/tags?q=${searchTerm}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags?q=${searchTerm}`)
     },
     async getTagsOnBooks() {
-        return await fetchIt(`http://localhost:8000/tags?active=books`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=books`)
     },
     async getTagsOnGames() {
-        return await fetchIt(`http://localhost:8000/tags?active=games`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=games`)
     },
     async getTagsOnShows() {
-        return await fetchIt(`http://localhost:8000/tags?active=shows`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=shows`)
     },
     async getTagsOnAny() {
-        return await fetchIt(`http://localhost:8000/tags?active=any`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=any`)
     },
    
     async get(tagId) {
-        return await fetchIt(`http://localhost:8000/tags/${tagId}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/tags/${tagId}`)
     },
 
 
@@ -32,7 +32,7 @@ export const TagRepo = {
     //DELETEs
     async deleteTag(tagId) {
         return await fetchIt(
-            `http://localhost:8000/tags/${tagId}`,
+            `https://trove-server.herokuapp.com/tags/${tagId}`,
             "DELETE"
         )
     },
@@ -40,14 +40,14 @@ export const TagRepo = {
     //POSTs
     async addTag(newTag) {
         return await fetchIt(
-            `http://localhost:8000/tags`,
+            `https://trove-server.herokuapp.com/tags`,
             "POST",
             JSON.stringify(newTag)
         )
     },
 
     async seedTags(token) {
-        return fetch("http://localhost:8000/tags/seed", {
+        return fetch("https://trove-server.herokuapp.com/tags/seed", {
         method: "POST",
         headers: {
             "Authorization": `Token ${token}`,
@@ -63,7 +63,7 @@ export const TagRepo = {
     //PUT
     async editTag(tagObj, tagId) {
         return await fetchIt(
-            `http://localhost:8000/tags/${tagId}`,
+            `https://trove-server.herokuapp.com/tags/${tagId}`,
             "PUT",
             JSON.stringify(tagObj)
         )

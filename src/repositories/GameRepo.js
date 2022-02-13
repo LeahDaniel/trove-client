@@ -11,26 +11,26 @@ export const GameRepo = {
             }
         }
 
-        return await fetchIt(`http://localhost:8000/games?search=${nameSearch}&current=${current}&platformId=${platformId}&multiplayer=${multiplayer}${tagString}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/games?search=${nameSearch}&current=${current}&platformId=${platformId}&multiplayer=${multiplayer}${tagString}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8000/games/${id}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/games/${id}`)
     },
     async getAllPlatforms() {
-        return await fetchIt(`http://localhost:8000/platforms`)
+        return await fetchIt(`https://trove-server.herokuapp.com/platforms`)
     },
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8000/games/${id}`, "DELETE")
+        return await fetchIt(`https://trove-server.herokuapp.com/games/${id}`, "DELETE")
     },
 
 
     //POSTs
     async addGame(newGame) {
         return await fetchIt(
-            `http://localhost:8000/games`,
+            `https://trove-server.herokuapp.com/games`,
             "POST",
             JSON.stringify(newGame)
         )
@@ -39,14 +39,14 @@ export const GameRepo = {
     //PUTs
     async modifyGame(modifiedGame, id) {
         return await fetchIt(
-            `http://localhost:8000/games/${id}`,
+            `https://trove-server.herokuapp.com/games/${id}`,
             "PUT",
             JSON.stringify(modifiedGame)
         )
     },
     async modifyPlatform(platformId, gameId) {
         return await fetchIt(
-            `http://localhost:8000/games/${gameId}/platform`,
+            `https://trove-server.herokuapp.com/games/${gameId}/platform`,
             "PUT",
             JSON.stringify({platform: platformId})
         )

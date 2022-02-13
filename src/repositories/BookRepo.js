@@ -11,38 +11,38 @@ export const BookRepo = {
             }
         }
 
-        return await fetchIt(`http://localhost:8000/books?search=${nameSearch}&current=${current}&authorId=${authorId}${tagString}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/books?search=${nameSearch}&current=${current}&authorId=${authorId}${tagString}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8000/books/${id}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/books/${id}`)
     },
 
     async getAllAuthors() {
-        return await fetchIt(`http://localhost:8000/authors`)
+        return await fetchIt(`https://trove-server.herokuapp.com/authors`)
     },
 
     async getAuthorsByName(nameString) {
-        return await fetchIt(`http://localhost:8000/authors?name=${nameString}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/authors?name=${nameString}`)
     },
 
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8000/books/${id}`, "DELETE")
+        return await fetchIt(`https://trove-server.herokuapp.com/books/${id}`, "DELETE")
     },
 
     //POSTs
     async addBook(newBook) {
         return await fetchIt(
-            `http://localhost:8000/books`,
+            `https://trove-server.herokuapp.com/books`,
             "POST",
             JSON.stringify(newBook)
         )
     },
     async addAuthor(newAuthor) {
         return await fetchIt(
-            `http://localhost:8000/authors`,
+            `https://trove-server.herokuapp.com/authors`,
             "POST",
             JSON.stringify(newAuthor)
         )
@@ -51,7 +51,7 @@ export const BookRepo = {
     //PUTs
     async modifyBook(modifiedBook, id) {
         return await fetchIt(
-            `http://localhost:8000/books/${id}`,
+            `https://trove-server.herokuapp.com/books/${id}`,
             "PUT",
             JSON.stringify(modifiedBook)
         )

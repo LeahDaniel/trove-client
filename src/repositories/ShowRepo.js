@@ -11,27 +11,27 @@ export const ShowRepo = {
             }
         }
 
-        return await fetchIt(`http://localhost:8000/shows?search=${nameSearch}&current=${current}&streamingServiceId=${streamingServiceId}${tagString}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/shows?search=${nameSearch}&current=${current}&streamingServiceId=${streamingServiceId}${tagString}`)
     },
 
     async get(id) {
-        return await fetchIt(`http://localhost:8000/shows/${id}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/shows/${id}`)
     },
 
     async getAllStreamingServices() {
-        return await fetchIt(`http://localhost:8000/streamingServices`)
+        return await fetchIt(`https://trove-server.herokuapp.com/streamingServices`)
     },
 
 
     //DELETEs
     async delete(id) {
-        return await fetchIt(`http://localhost:8000/shows/${id}`, "DELETE")
+        return await fetchIt(`https://trove-server.herokuapp.com/shows/${id}`, "DELETE")
     },
 
     //POSTs
     async addShow(newShow) {
         return await fetchIt(
-            `http://localhost:8000/shows`,
+            `https://trove-server.herokuapp.com/shows`,
             "POST",
             JSON.stringify(newShow)
         )
@@ -40,7 +40,7 @@ export const ShowRepo = {
     //PUTs
     async modifyShow(modifiedShow, id) {
         return await fetchIt(
-            `http://localhost:8000/shows/${id}`,
+            `https://trove-server.herokuapp.com/shows/${id}`,
             "PUT",
             JSON.stringify(modifiedShow)
         )

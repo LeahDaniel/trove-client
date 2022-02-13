@@ -4,10 +4,10 @@ import { fetchIt } from "./FetchIt"
 export const SocialRepo = {
     //GETs
     async getUserByUsername(username) {
-        return await fetchIt(`http://localhost:8000/users?username=${username}`)
+        return await fetchIt(`https://trove-server.herokuapp.com/users?username=${username}`)
     },
     async getCurrentUser() {
-        return fetch("http://localhost:8000/users", {
+        return fetch("https://trove-server.herokuapp.com/users", {
         method: "GET",
         headers: {
             "Authorization": `Token ${localStorage.getItem("trove_token")}`
@@ -17,22 +17,22 @@ export const SocialRepo = {
     },
 
     async getAllGameRecommendations() {
-        return await fetchIt(`http://localhost:8000/gameRecommendations`)
+        return await fetchIt(`https://trove-server.herokuapp.com/gameRecommendations`)
     },
     async getAllShowRecommendations() {
-        return await fetchIt(`http://localhost:8000/showRecommendations`)
+        return await fetchIt(`https://trove-server.herokuapp.com/showRecommendations`)
     },
     async getAllBookRecommendations() {
-        return await fetchIt(`http://localhost:8000/bookRecommendations`)
+        return await fetchIt(`https://trove-server.herokuapp.com/bookRecommendations`)
     },
     async bookRecommendationNotification() {
-        return await fetchIt(`http://localhost:8000/bookRecommendations/notify`)
+        return await fetchIt(`https://trove-server.herokuapp.com/bookRecommendations/notify`)
     },
     async showRecommendationNotification() {
-        return await fetchIt(`http://localhost:8000/showRecommendations/notify`)
+        return await fetchIt(`https://trove-server.herokuapp.com/showRecommendations/notify`)
     },
     async gameRecommendationNotification() {
-        return await fetchIt(`http://localhost:8000/gameRecommendations/notify`)
+        return await fetchIt(`https://trove-server.herokuapp.com/gameRecommendations/notify`)
     },
 
 
@@ -40,19 +40,19 @@ export const SocialRepo = {
     //DELETEs
     async deleteGameRecommendation(id) {
         return await fetchIt(
-            `http://localhost:8000/gameRecommendations/${id}`,
+            `https://trove-server.herokuapp.com/gameRecommendations/${id}`,
             "DELETE"
         )
     },
     async deleteShowRecommendation(id) {
         return await fetchIt(
-            `http://localhost:8000/showRecommendations/${id}`,
+            `https://trove-server.herokuapp.com/showRecommendations/${id}`,
             "DELETE"
         )
     },
     async deleteBookRecommendation(id) {
         return await fetchIt(
-            `http://localhost:8000/bookRecommendations/${id}`,
+            `https://trove-server.herokuapp.com/bookRecommendations/${id}`,
             "DELETE"
         )
     },
@@ -60,7 +60,7 @@ export const SocialRepo = {
     //POSTs
     async addBookRecommendation(newRecommendation) {
         return await fetchIt(
-            `http://localhost:8000/bookRecommendations`,
+            `https://trove-server.herokuapp.com/bookRecommendations`,
             "POST",
             JSON.stringify(newRecommendation)
         )
@@ -68,7 +68,7 @@ export const SocialRepo = {
 
     async addShowRecommendation(newRecommendation) {
         return await fetchIt(
-            `http://localhost:8000/showRecommendations`,
+            `https://trove-server.herokuapp.com/showRecommendations`,
             "POST",
             JSON.stringify(newRecommendation)
         )
@@ -76,7 +76,7 @@ export const SocialRepo = {
 
     async addGameRecommendation(newRecommendation) {
         return await fetchIt(
-            `http://localhost:8000/gameRecommendations`,
+            `https://trove-server.herokuapp.com/gameRecommendations`,
             "POST",
             JSON.stringify(newRecommendation)
         )
@@ -86,19 +86,19 @@ export const SocialRepo = {
     // all of the user's recommendations)
     async readBookRecommendations() {
         return await fetchIt(
-            `http://localhost:8000/bookRecommendations/read`,
+            `https://trove-server.herokuapp.com/bookRecommendations/read`,
             "PUT"
         )
     },
     async readShowRecommendations() {
         return await fetchIt(
-            `http://localhost:8000/showRecommendations/read`,
+            `https://trove-server.herokuapp.com/showRecommendations/read`,
             "PUT"
         )
     },
     async readGameRecommendations() {
         return await fetchIt(
-            `http://localhost:8000/gameRecommendations/read`,
+            `https://trove-server.herokuapp.com/gameRecommendations/read`,
             "PUT"
         )
     },
