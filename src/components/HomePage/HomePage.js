@@ -51,7 +51,7 @@ export const HomePage = () => {
                 .then(() => setIsLoading(false))
 
             //mark whether a user has used the filters in order to determine the message they get for a blank list
-            if (titleExists || tagsExist) {
+            if (titleExists || tagsExist || currentExists) {
                 setAttemptBoolean(true)
             } else {
                 setAttemptBoolean(false)
