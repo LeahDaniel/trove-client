@@ -1,12 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { ApplicationViews } from "./ApplicationViews";
 import { NavBar } from "./nav/NavBar";
 import { Login } from "./auth/Login";
 import { Register } from "./auth/Register";
+import { SocialRepo } from "../repositories/SocialRepo";
 
 export const Trove = () => {
-    const [newNotification, setNewNotification] = useState(false)
+    const [notification, setNotification] = useState(false)
+
+    useEffect(() => {
+        const findNotificationBoolean = () => {
+            let notificationBool = false
+
+            SocialRepo.gameRecommendationNotification()
+                .then((response) => {
+                    if (response.new === true) {
+                        notificationBool = true
+                    }
+                })
+                .then(SocialRepo.showRecommendationNotification)
+                .then((response) => {
+                    if (response.new === true) {
+                        notificationBool = true
+                    }
+                })
+                .then(SocialRepo.bookRecommendationNotification)
+                .then((response) => {
+                    if (response.new === true) {
+                        notificationBool = true
+                    }
+                })
+                .then(() => {
+                    setNotification(notificationBool)
+                })
+        }
+
+        if (localStorage.getItem("trove_token")) {
+            findNotificationBoolean()
+            const interval = setInterval(() => findNotificationBoolean(), 8000)
+            return () => {
+                clearInterval(interval);
+            }
+        }
+    }, [])
 
     return (
         <>
@@ -16,8 +53,8 @@ export const Trove = () => {
                     if (localStorage.getItem("trove_token")) {
                         return (
                             <>
-                                <NavBar newNotification={newNotification} />
-                                <ApplicationViews setNewNotification={setNewNotification} />
+                                <NavBar notification={notification}/>
+                                <ApplicationViews setNotification={setNotification}/>
                                 <div className="bottom"></div>
                             </>
                         );

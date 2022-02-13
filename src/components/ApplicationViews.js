@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { Route } from "react-router-dom"
-import { SocialRepo } from "../repositories/SocialRepo"
 import { BookForm } from "./Books/BookForm"
 import { BookQueueView } from "./Books/BookQueueView"
 import { CurrentBooksView } from "./Books/CurrentBooksView"
@@ -15,34 +14,8 @@ import { GameForm } from "./VideoGames/GameForm"
 import { GameQueueView } from "./VideoGames/GameQueueView"
 
 
-export const ApplicationViews = ({ setNewNotification }) => {
-    const [receivedBookRecommendations, setReceivedBookRecommendations] = useState([])
-    const [receivedGameRecommendations, setReceivedGameRecommendations] = useState([])
-    const [receivedShowRecommendations, setReceivedShowRecommendations] = useState([])
+export const ApplicationViews = ({setNotification}) => {
 
-    useEffect(
-        () => {
-            SocialRepo.getAllShowRecommendations()
-                .then(setReceivedShowRecommendations)
-            SocialRepo.getAllGameRecommendations()
-                .then(setReceivedGameRecommendations)
-            SocialRepo.getAllBookRecommendations()
-                .then(setReceivedBookRecommendations)
-        }, []
-    )
-
-    useEffect(
-        () => {
-            const foundBookRecommendation = receivedBookRecommendations.find(bookReco => bookReco.read === false)
-            const foundGameRecommendation = receivedGameRecommendations.find(gameReco => gameReco.read === false)
-            const foundShowRecommendation = receivedShowRecommendations.find(showReco => showReco.read === false)
-            if (foundBookRecommendation || foundGameRecommendation || foundShowRecommendation) {
-                setNewNotification(true)
-            } else {
-                setNewNotification(false)
-            }
-        }, [receivedBookRecommendations, receivedGameRecommendations, receivedShowRecommendations, setNewNotification]
-    )
     return (
         <>
             <Route exact path="/">
@@ -88,7 +61,7 @@ export const ApplicationViews = ({ setNewNotification }) => {
                 <TagView />
             </Route>
             <Route exact path="/recommendations">
-                <RecommendationList setNewNotification={setNewNotification}/>
+                <RecommendationList setNotification={setNotification}/>
             </Route>
         </>
     )
