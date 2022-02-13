@@ -9,13 +9,13 @@ export const TagRepo = {
         return await fetchIt(`https://trove-server.herokuapp.com/tags?q=${searchTerm}`)
     },
     async getTagsOnCurrent() {
-        return await fetchIt(`http://localhost:8000/tags/active_current`)
+        return await fetchIt(`https://trove-server.herokuapp.com/active_current`)
     },
     async getTagsOnQueued() {
-        return await fetchIt(`http://localhost:8000/tags/active_queued`)
+        return await fetchIt(`https://trove-server.herokuapp.com/active_queued`)
     },
     async getTagsOnAny() {
-        return await fetchIt(`http://localhost:8000/tags/active`)
+        return await fetchIt(`https://trove-server.herokuapp.com/active`)
     },
    
     async get(tagId) {

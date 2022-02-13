@@ -26,10 +26,10 @@ export const BookRepo = {
         return await fetchIt(`https://trove-server.herokuapp.com/authors?name=${nameString}`)
     },
     async getAuthorsOnCurrent() {
-        return await fetchIt(`http://localhost:8000/authors/active_current`)
+        return await fetchIt(`https://trove-server.herokuapp.com/authors/active_current`)
     },
     async getAuthorsOnQueued() {
-        return await fetchIt(`http://localhost:8000/authors/active_queued`)
+        return await fetchIt(`https://trove-server.herokuapp.com/authors/active_queued`)
     },
 
 
