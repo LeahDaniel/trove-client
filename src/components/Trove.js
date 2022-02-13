@@ -36,13 +36,13 @@ export const Trove = () => {
                 })
         }
 
-        // if (localStorage.getItem("trove_token")) {
-        //     findNotificationBoolean()
-        //     const interval = setInterval(() => findNotificationBoolean(), 8000)
-        //     return () => {
-        //         clearInterval(interval);
-        //     }
-        // }
+        if (localStorage.getItem("trove_token")) {
+            findNotificationBoolean()
+            const interval = setInterval(() => findNotificationBoolean(), 8000)
+            return () => {
+                clearInterval(interval);
+            }
+        }
     }, [])
 
     return (
