@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 import { GameRepo } from "../../repositories/GameRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
-export const SearchGames = ({ userEntries, setUserEntries }) => {
+export const SearchGames = ({ userEntries, setUserEntries, current }) => {
     const [platforms, setPlatforms] = useState([])
     const [tags, setTags] = useState([])
     const [isLoading, setLoading] = useState(true)
@@ -11,7 +11,13 @@ export const SearchGames = ({ userEntries, setUserEntries }) => {
     useEffect(
         () => {
             GameRepo.getAllPlatforms().then(setPlatforms)
-                .then(() => TagRepo.getTagsOnGames().then(setTags))
+                .then(() => {
+                    if(current){
+                        TagRepo.getTagsOnCurrent().then((res) => setTags(res.currentGameTags))
+                    } else{
+                        TagRepo.getTagsOnQueued().then((res) => setTags(res.queuedGameTags))
+                    }
+                })
                 .then(() => setLoading(false))
         }, []
     )
@@ -31,11 +37,8 @@ export const SearchGames = ({ userEntries, setUserEntries }) => {
             {
                 isLoading
                     ? <div className="pb-2 mt-5 px-2"></div>
-                    : <Form className="pb-2 mt-5 px-2 bg-secondary shadow-sm rounded text-white" inline>
-
-                        <h5 className="text-center py-3">Filters</h5>
-
-                        <FormGroup>
+                    : <Form className="pb-2 mt-5 px-2 bg-secondary shadow-sm text-white sidebar" style={{ borderRadius: 20 }} inline>
+                        <FormGroup className="pt-4">
                             <Label for="nameSearch">
                                 Search by Title
                             </Label>

@@ -25,6 +25,12 @@ export const BookRepo = {
     async getAuthorsByName(nameString) {
         return await fetchIt(`http://localhost:8000/authors?name=${nameString}`)
     },
+    async getAuthorsOnCurrent() {
+        return await fetchIt(`http://localhost:8000/authors/active_current`)
+    },
+    async getAuthorsOnQueued() {
+        return await fetchIt(`http://localhost:8000/authors/active_queued`)
+    },
 
 
     //DELETEs

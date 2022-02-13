@@ -8,17 +8,14 @@ export const TagRepo = {
     async getTagsBySearchTerm(searchTerm) {
         return await fetchIt(`http://localhost:8000/tags?q=${searchTerm}`)
     },
-    async getTagsOnBooks() {
-        return await fetchIt(`http://localhost:8000/tags?active=books`)
+    async getTagsOnCurrent() {
+        return await fetchIt(`http://localhost:8000/tags/active_current`)
     },
-    async getTagsOnGames() {
-        return await fetchIt(`http://localhost:8000/tags?active=games`)
-    },
-    async getTagsOnShows() {
-        return await fetchIt(`http://localhost:8000/tags?active=shows`)
+    async getTagsOnQueued() {
+        return await fetchIt(`http://localhost:8000/tags/active_queued`)
     },
     async getTagsOnAny() {
-        return await fetchIt(`http://localhost:8000/tags?active=any`)
+        return await fetchIt(`http://localhost:8000/tags/active`)
     },
    
     async get(tagId) {
