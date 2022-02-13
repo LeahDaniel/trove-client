@@ -50,7 +50,7 @@ export const BookQueueView = () => {
 
     return (
         <div className="row justify-content-evenly">
-            <div className="col-3 sidebar">
+            <div className="col-3">
                 {/* clickable "add" image to bring user to form */}
                 <div className="row justify-content-center mt-5">
                     <Button color="info" size="sm" className="col-sm-10 col-md-8 col-lg-6" onClick={
@@ -62,7 +62,7 @@ export const BookQueueView = () => {
                     </Button>
                 </div>
 
-                <SearchBooks setUserEntries={setUserEntries} userEntries={userEntries} />
+                <SearchBooks setUserEntries={setUserEntries} userEntries={userEntries} current={false} />
             </div>
             {
                 isLoading

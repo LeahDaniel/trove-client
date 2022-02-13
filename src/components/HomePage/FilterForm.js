@@ -23,15 +23,12 @@ export const FilterForm = ({ userEntries, setUserEntries }) => {
     }
 
     return (
-        <div className="col-3 text-white sidebar">
+        <div className="col-3 text-white sidebar-main mt-4">
             {
                 isLoading
                     ? ""
-                    : <Form className="pb-2 mt-5 px-3 bg-secondary shadow-sm" style={{ borderRadius: 20 }} inline>
-
-                        <h5 className="text-center pt-5 pb-4">Filters</h5>
-
-                        <FormGroup>
+                    : <Form className="pb-2 px-3 bg-secondary shadow-sm" style={{ borderRadius: 20 }} inline>
+                        <FormGroup className="pt-4">
                             <Label for="titleSearch">
                                 Search by Title
                             </Label>

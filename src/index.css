@@ -30,13 +30,22 @@ a{
     padding: 2em;
 }
 
+
 .sidebar {
-    width: 25%;
-    height: 50%;
-    min-height: 200px;
     overflow: auto;
     position: -webkit-sticky;
     position: sticky;
-    top: 5%;
+    max-height: calc(100vh - 3rem);
+    top: 3%;
+    overscroll-behavior-y: auto;
+}
+
+.sidebar-main {
+    overflow: auto;
+    position: -webkit-sticky;
+    position: sticky;
+    max-height: calc(100vh - 1rem);
+    top: 2%;
+    overscroll-behavior-y: auto;
 }
 
