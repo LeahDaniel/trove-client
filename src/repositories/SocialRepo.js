@@ -25,6 +25,16 @@ export const SocialRepo = {
     async getAllBookRecommendations() {
         return await fetchIt(`http://localhost:8000/bookRecommendations`)
     },
+    async bookRecommendationNotification() {
+        return await fetchIt(`http://localhost:8000/bookRecommendations/notify`)
+    },
+    async showRecommendationNotification() {
+        return await fetchIt(`http://localhost:8000/showRecommendations/notify`)
+    },
+    async gameRecommendationNotification() {
+        return await fetchIt(`http://localhost:8000/gameRecommendations/notify`)
+    },
+
 
 
     //DELETEs

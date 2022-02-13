@@ -4,10 +4,11 @@ import troveIcon from "../../images/TroveIcon.png"
 import notificationIcon from "../../images/NotificationIcon.png"
 import { SocialRepo } from "../../repositories/SocialRepo"
 
-export const NavBar = ({newNotification}) => {
+export const NavBar = ({notification}) => {
     //initialize state to open and close navbar when toggler is clicked.
     const [isOpen, setIsOpen] = useState(false)
     const [user, setUser] = useState({})
+
 
     useEffect(
         () => {
@@ -106,7 +107,7 @@ export const NavBar = ({newNotification}) => {
                     </NavItem>
                     <NavItem className="d-flex flex-row align-self-start mt-2 ps-1 ms-1 pt-1">
                         {
-                            newNotification=== true
+                            notification
                                 ? <img src={notificationIcon}
                                     alt="New notification!"
                                     style={{ maxWidth: 20, maxHeight: 20 }}
