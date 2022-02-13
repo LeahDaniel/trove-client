@@ -8,17 +8,14 @@ export const TagRepo = {
     async getTagsBySearchTerm(searchTerm) {
         return await fetchIt(`https://trove-server.herokuapp.com/tags?q=${searchTerm}`)
     },
-    async getTagsOnBooks() {
-        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=books`)
+    async getTagsOnCurrent() {
+        return await fetchIt(`http://localhost:8000/tags/active_current`)
     },
-    async getTagsOnGames() {
-        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=games`)
-    },
-    async getTagsOnShows() {
-        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=shows`)
+    async getTagsOnQueued() {
+        return await fetchIt(`http://localhost:8000/tags/active_queued`)
     },
     async getTagsOnAny() {
-        return await fetchIt(`https://trove-server.herokuapp.com/tags?active=any`)
+        return await fetchIt(`http://localhost:8000/tags/active`)
     },
    
     async get(tagId) {

@@ -51,7 +51,7 @@ export const ShowQueueView = () => {
 
     return (
         <div className="row justify-content-evenly">
-            <div className="col-3 sidebar">
+            <div className="col-3">
                 {/* clickable "add" image to bring user to form */}
                 <div className="row justify-content-center mt-5">
                     <Button color="info" size="sm" className="col-sm-10 col-md-8 col-lg-6" onClick={
@@ -63,7 +63,7 @@ export const ShowQueueView = () => {
                     </Button>
                 </div>
 
-                <SearchShows setUserEntries={setUserEntries} userEntries={userEntries} />
+                <SearchShows setUserEntries={setUserEntries} userEntries={userEntries} current={false}/>
             </div>
             {
                 isLoading

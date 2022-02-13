@@ -3,15 +3,21 @@ import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 import { ShowRepo } from "../../repositories/ShowRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
-export const SearchShows = ({ userEntries, setUserEntries }) => {
+export const SearchShows = ({ userEntries, setUserEntries, current }) => {
     const [tags, setTags] = useState([])
     const [streamingServices, setStreamingServices] = useState([])
     const [isLoading, setLoading] = useState(true)
 
     useEffect(
         () => {
-            TagRepo.getTagsOnShows().then(setTags)
-                .then(() => ShowRepo.getAllStreamingServices().then(setStreamingServices))
+            ShowRepo.getAllStreamingServices().then(setStreamingServices)
+                .then(() => {
+                    if (current) {
+                        TagRepo.getTagsOnCurrent().then((res) => setTags(res.currentShowTags))
+                    } else{
+                        TagRepo.getTagsOnQueued().then((res) => setTags(res.queuedShowTags))
+                    }
+                })
                 .then(() => setLoading(false))
         }, []
     )
@@ -30,11 +36,8 @@ export const SearchShows = ({ userEntries, setUserEntries }) => {
             {
                 isLoading
                     ? <div className="pb-2 mt-5 px-2"></div>
-                    : <Form className="pb-2 mt-5 px-2 bg-secondary shadow-sm rounded text-white" inline>
-
-                        <h5 className="text-center py-3">Filters</h5>
-
-                        <FormGroup>
+                    : <Form className="pb-2 mt-5 px-2 bg-secondary sidebar shadow-sm text-white" style={{ borderRadius: 20 }} inline>
+                        <FormGroup className="pt-4">
                             <Label for="nameSearch">
                                 Search by Title
                             </Label>

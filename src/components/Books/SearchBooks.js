@@ -3,16 +3,22 @@ import { Button, Form, FormGroup, Input, Label } from "reactstrap"
 import { BookRepo } from "../../repositories/BookRepo"
 import { TagRepo } from "../../repositories/TagRepo"
 
-export const SearchBooks = ({ userEntries, setUserEntries }) => {
+export const SearchBooks = ({ userEntries, setUserEntries, current }) => {
     const [tags, setTags] = useState([])
     const [authors, setAuthors] = useState([])
     const [isLoading, setLoading] = useState(true)
 
     useEffect(
         () => {
-            TagRepo.getTagsOnBooks().then(setTags)
-                .then(() => BookRepo.getAllAuthors().then(setAuthors))
-                .then(() => setLoading(false))
+            if (current) {
+                BookRepo.getAuthorsOnCurrent().then(setAuthors)
+                    .then(() => TagRepo.getTagsOnCurrent().then((res) => setTags(res.currentBookTags)))
+                    .then(() => setLoading(false))
+            } else {
+                BookRepo.getAuthorsOnQueued().then(setAuthors)
+                    .then(() => TagRepo.getTagsOnQueued().then((res) => setTags(res.queuedBookTags)))
+                    .then(() => setLoading(false))
+            }
         }, []
     )
 
@@ -30,11 +36,8 @@ export const SearchBooks = ({ userEntries, setUserEntries }) => {
             {
                 isLoading
                     ? <div className="pb-2 mt-5 px-3" ></div>
-                    : <Form className="pb-2 mt-5 px-3 bg-secondary shadow-sm rounded text-white" inline>
-
-                        <h5 className="text-center py-3">Filters</h5>
-
-                        <FormGroup>
+                    : <Form className="pb-2 mt-5 px-3 bg-secondary sidebar shadow-sm text-white" style={{ borderRadius: 20 }} inline>
+                        <FormGroup className="pt-4">
                             <Label for="nameSearch">
                                 Search by Title
                             </Label>
