@@ -19,7 +19,7 @@ export const SearchBooks = ({ userEntries, setUserEntries, current }) => {
                     .then(() => TagRepo.getTagsOnQueued().then((res) => setTags(res.queuedBookTags)))
                     .then(() => setLoading(false))
             }
-        }, []
+        }, [current]
     )
 
     //check for parameter's value in chosenPlatforms. Delete if it exists (representing unchecking a box), add it if it doesn't (checking a box)
