@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react"
+import React, { useState } from "react"
 import { Link, useHistory } from "react-router-dom"
 import { Button, Form, FormGroup, Input, Label, Modal } from "reactstrap"
 import { TagRepo } from "../../repositories/TagRepo"
@@ -11,8 +11,6 @@ export const Register = () => {
     const [password2, setPassword2] = useState("")
     const [openPassword, setOpenPassword] = useState(false)
     const [openUsername, setOpenUsername] = useState(false)
-    const passwordDialog = useRef()
-    const usernameDialog = useRef()
     const history = useHistory()
 
     const handleRegister = (e) => {

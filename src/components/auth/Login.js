@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react"
+import React, { useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import { Button, Form, FormGroup, Input, Label, UncontrolledAlert } from "reactstrap"
+import { Button, Form, FormGroup, Input, Label, Modal, UncontrolledAlert } from "reactstrap"
 
 
 export const Login = () => {
