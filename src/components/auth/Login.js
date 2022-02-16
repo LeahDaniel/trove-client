@@ -46,7 +46,7 @@ export const Login = () => {
                 </UncontrolledAlert>
 
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
-                <Modal isOpen={openBoolean === true ? true : false}>
+                <Modal isOpen={openBoolean === true ? true : false} centered>
                     <div className="d-flex flex-column">
                         <div>
                             <Button className="float-end" close onClick={e => setOpenBoolean(false)}></Button>

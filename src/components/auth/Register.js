@@ -50,7 +50,7 @@ export const Register = () => {
     return (
         <main className="row justify-content-center my-5">
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
-                <Modal isOpen={openPassword === true ? true : false}>
+                <Modal isOpen={openPassword === true ? true : false} centered>
                     <div className="d-flex flex-column">
                         <div>
                             <Button close onClick={e => setOpenPassword(false)} color="info" className="float-end" />
@@ -58,7 +58,7 @@ export const Register = () => {
                         <div className="m-4 pb-3">Passwords do not match</div>
                     </div>
                 </Modal>
-                <Modal isOpen={openUsername === true ? true : false}>
+                <Modal isOpen={openUsername === true ? true : false} centered>
                     <div className="d-flex flex-column">
                         <div>
                             <Button close onClick={e => setOpenUsername(false)} color="info" className="float-end" />
