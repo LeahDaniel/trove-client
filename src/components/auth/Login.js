@@ -6,11 +6,11 @@ import { Button, Form, FormGroup, Input, Label, UncontrolledAlert } from "reacts
 export const Login = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const invalidDialog = useRef()
+    const [openBoolean, setOpenBoolean] = useState(false)
     const history = useHistory()
 
-    const handleLogin = (e) => {
-        e.preventDefault()
+    const handleLogin = (evt) => {
+        evt.preventDefault()
 
         return fetch("https://trove-server.herokuapp.com/login", {
             method: "POST",
@@ -30,7 +30,7 @@ export const Login = () => {
                     history.push("/")
                 }
                 else {
-                    invalidDialog.current.showModal()
+                    setOpenBoolean(true)
                 }
             })
     }
@@ -46,14 +46,14 @@ export const Login = () => {
                 </UncontrolledAlert>
 
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
-                <dialog className="border-0" ref={invalidDialog}>
+                <Modal isOpen={openBoolean === true ? true : false}>
                     <div className="d-flex flex-column">
                         <div>
-                            <Button className="float-end" close onClick={e => invalidDialog.current.close()}></Button>
+                            <Button className="float-end" close onClick={e => setOpenBoolean(false)}></Button>
                         </div>
                         <div className="m-4 pb-3">Username or password was not valid.</div>
                     </div>
-                </dialog>
+                </Modal>
 
                 <Form onSubmit={handleLogin}>
                     <h1 className="pt-4">Trove</h1>

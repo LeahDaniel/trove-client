@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import { Button, Form, FormGroup, Input, Label } from "reactstrap"
+import { Button, Form, FormGroup, Input, Label, Modal } from "reactstrap"
 import { TagRepo } from "../../repositories/TagRepo"
 
 export const Register = () => {
@@ -9,6 +9,8 @@ export const Register = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [password2, setPassword2] = useState("")
+    const [openPassword, setOpenPassword] = useState(false)
+    const [openUsername, setOpenUsername] = useState(false)
     const passwordDialog = useRef()
     const usernameDialog = useRef()
     const history = useHistory()
@@ -39,33 +41,33 @@ export const Register = () => {
                         TagRepo.seedTags(res.token)
                         history.push("/")
                     } else {
-                        usernameDialog.current.showModal()
+                        setOpenUsername(true)
                     }
                 })
         } else {
-            passwordDialog.current.showModal()
+            setOpenPassword(true)
         }
     }
 
     return (
         <main className="row justify-content-center my-5">
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
-                <dialog className="border-0" ref={passwordDialog}>
+                <Modal isOpen={openPassword === true ? true : false}>
                     <div className="d-flex flex-column">
                         <div>
-                            <Button close onClick={e => passwordDialog.current.close()} color="info" className="float-end" />
+                            <Button close onClick={e => setOpenPassword(false)} color="info" className="float-end" />
                         </div>
                         <div className="m-4 pb-3">Passwords do not match</div>
                     </div>
-                </dialog>
-                <dialog className="border-0" ref={usernameDialog}>
+                </Modal>
+                <Modal isOpen={openUsername === true ? true : false}>
                     <div className="d-flex flex-column">
                         <div>
-                            <Button close onClick={e => usernameDialog.current.close()} color="info" className="float-end" />
+                            <Button close onClick={e => setOpenUsername(false)} color="info" className="float-end" />
                         </div>
                         <div className="m-4 pb-3">Username is not available</div>
                     </div>
-                </dialog>
+                </Modal>
 
                 <Form onSubmit={handleRegister}>
                     <h1 className="pt-4">Trove</h1>

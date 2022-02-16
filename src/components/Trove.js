@@ -38,7 +38,7 @@ export const Trove = () => {
 
         if (localStorage.getItem("trove_token")) {
             findNotificationBoolean()
-            const interval = setInterval(() => findNotificationBoolean(), 8000)
+            const interval = setInterval(() => findNotificationBoolean(), 3000)
             return () => {
                 clearInterval(interval);
             }
