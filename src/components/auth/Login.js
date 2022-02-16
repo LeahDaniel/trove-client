@@ -37,14 +37,6 @@ export const Login = () => {
 
     return (
         <main className="row justify-content-center my-5">
-            <UncontrolledAlert
-                    className="shadow-sm text-black p-4 col-9 "
-                    color="danger">
-                        <p>Thank you for demoing my site! To start with pre-made user data, use the following login. Or, register a new account.</p>
-                        <p>Username: mitch</p>
-                        <p>Password: trovedemo</p>
-                </UncontrolledAlert>
-
             <div className="my-5 p-5 col-9 gradient rounded border shadow-sm">
                 <Modal isOpen={openBoolean === true ? true : false} centered>
                     <div className="d-flex flex-column">
