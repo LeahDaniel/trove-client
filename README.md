@@ -41,7 +41,8 @@ My goals for this app were to achieve full CRUD, to create a complex tagging sys
 - React
 - Git
 - Github
-- JSON Server
+- Python
+- Django REST framework
 - Visual Studio Code
 - Bootstrap/Reactstrap
 - React Select
@@ -56,9 +57,9 @@ My goals for this app were to achieve full CRUD, to create a complex tagging sys
 git clone git@github.com:LeahDaniel/trove.git
 cd trove
 ```
-2. Access the data
+2. Access the api
 
-<a href="https://github.com/LeahDaniel/trove-api" target="_blank" rel="noreferrer"><img src="https://img.shields.io/badge/-Click%20Here-blue" alt="Trove API Repository" style="height: 30px !important; width: 100px !important;" /></a>
+<a href="https://github.com/LeahDaniel/trove-server" target="_blank" rel="noreferrer"><img src="https://img.shields.io/badge/-Click%20Here-blue" alt="Trove server" style="height: 30px !important; width: 100px !important;" /></a>
 
 3. Launch the application
 
