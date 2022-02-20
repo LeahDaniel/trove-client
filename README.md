@@ -57,7 +57,7 @@ My goals for this app were to achieve full CRUD, to create a complex tagging sys
 git clone git@github.com:LeahDaniel/trove.git
 cd trove
 ```
-2. Access the api
+2. Clone the api, pipenv install, and runserver
 
 <a href="https://github.com/LeahDaniel/trove-server" target="_blank" rel="noreferrer"><img src="https://img.shields.io/badge/-Click%20Here-blue" alt="Trove server" style="height: 30px !important; width: 100px !important;" /></a>
 
